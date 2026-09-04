@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="AIS_Practica_One/AIS_Practica_One_WinForms.csproj" />
+  <Project Path="AIS_Practica_One_Console/AIS_Practica_One_Console.csproj" />
+  <Project Path="AIS_Practica_One_Model/AIS_Practica_One_Model.csproj" />
+</Solution>
