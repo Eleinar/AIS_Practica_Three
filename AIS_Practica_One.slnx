@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Data/">
     <File Path="Brands.csv" />
+    <File Path="Cars.csv" />
   </Folder>
   <Project Path="AIS_Practica_One/AIS_Practica_One_WinForms.csproj" />
   <Project Path="AIS_Practica_One_Console/AIS_Practica_One_Console.csproj" />
