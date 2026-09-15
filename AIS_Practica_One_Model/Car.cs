@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AIS_Practica_One_Model
 {
-    internal class Car
+    public class Car
     {
         public int ID { get; set; }
         public int BrandID { get; set; }

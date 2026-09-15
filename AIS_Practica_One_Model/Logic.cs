@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AIS_Practica_One_Model
 {
-    internal class Logic
+    public class Logic
     {
         private List<Car> _cars = new();
         private List<Brand> _brands = new();
