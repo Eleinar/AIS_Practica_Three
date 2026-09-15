@@ -7,7 +7,85 @@ namespace AIS_Practica_One_Model
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            string dataDirectory = "Data";
+
+            Logic logic = new Logic(dataDirectory);
+
+            bool isRunning = true;
+
+            while (isRunning)
+            {
+                Console.Clear();
+                ShowMenu();
+
+                Console.Write("\nВыберите действие: ");
+                string? choice = Console.ReadLine();
+
+                Console.Clear();
+
+                switch (choice)
+                {
+                    case "1":
+                        ShowAllCars(logic);
+                        break;
+
+                    case "2":
+                        FindCar(logic);
+                        break;
+
+                    case "3":
+                        AddCar(logic);
+                        break;
+
+                    case "4":
+                        UpdateCar(logic);
+                        break;
+
+                    case "5":
+                        DeleteCar(logic);
+                        break;
+
+                    case "6":
+                        ShowAllBrands(logic);
+                        break;
+
+                    case "7":
+                        AddBrand(logic);
+                        break;
+
+                    case "8":
+                        UpdateBrand(logic);
+                        break;
+
+                    case "9":
+                        DeleteBrand(logic);
+                        break;
+
+                    case "10":
+                        ShowCarsByBrand(logic);
+                        break;
+
+                    case "11":
+                        ShowCarsByFuelConsumption(logic);
+                        break;
+
+                    case "12":
+                        SaveData(logic);
+                        break;
+
+                    case "0":
+                        logic.SaveAll();
+                        isRunning = false;
+                        Console.WriteLine("Данные сохранены.");
+                        break;
+
+                    default:
+                        Console.WriteLine("Неизвестная команда.");
+                        Console.WriteLine("\nНажмите Enter для продолжения...");
+                        Console.ReadLine();
+                        break;
+                }
+            }
         }
 
         static void ShowMenu()
@@ -423,9 +501,7 @@ namespace AIS_Practica_One_Model
 
         }
 
-        // =========================
-        // Бизнес-функция №1
-        // =========================
+
 
         static void ShowCarsByBrand(Logic logic)
         {
@@ -471,9 +547,7 @@ namespace AIS_Practica_One_Model
         }
 
 
-        // =========================
-        // Бизнес-функция №2
-        // =========================
+ 
 
         static void ShowCarsByFuelConsumption(Logic logic)
         {
@@ -509,9 +583,7 @@ namespace AIS_Practica_One_Model
         }
 
 
-        // =========================
-        // Сохранение
-        // =========================
+
 
         static void SaveData(Logic logic)
         {
