@@ -10,7 +10,7 @@ namespace AIS_Practica_One_Model
         {
             List<Car> cars = new List<Car>();
 
-            if (File.Exists(filePath))
+            if (!File.Exists(filePath))
             {
                 return cars;
             }
@@ -19,14 +19,14 @@ namespace AIS_Practica_One_Model
 
             foreach (string line in lines)
             {
-                if(string.IsNullOrWhiteSpace(line))
+                if (string.IsNullOrWhiteSpace(line))
                 {
                     continue;
                 }
 
                 string[] properties = line.Split(';');
 
-                if (properties.Length !=8)
+                if (properties.Length != 8)
                 {
                     continue;
                 }
@@ -44,6 +44,7 @@ namespace AIS_Practica_One_Model
                         FuelConsumption = float.Parse(properties[6]),
                         Color = properties[7]
                     };
+
                     cars.Add(car);
                 }
                 catch (Exception)
@@ -51,6 +52,7 @@ namespace AIS_Practica_One_Model
                     continue;
                 }
             }
+
             return cars;
         }
 

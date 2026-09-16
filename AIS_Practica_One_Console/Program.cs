@@ -7,7 +7,7 @@ namespace AIS_Practica_One_Model
     {
         public static void Main(string[] args)
         {
-            string dataDirectory = "Data";
+            string dataDirectory = "C:\\Users\\eleinar\\source\\repos\\AIS_Practica_One";
 
             Logic logic = new Logic(dataDirectory);
 
@@ -188,7 +188,7 @@ namespace AIS_Practica_One_Model
 
             int brandID = ReadInt("Введите ID бренда: ");
 
-            if (logic.GetCarById(brandID) == null)
+            if (logic.GetBrandById(brandID) == null)
             {
                 Console.WriteLine("Бренд с таким ID не найден.");
                 Console.WriteLine("\nНажмите Enter для продолжения...");
@@ -255,6 +255,9 @@ namespace AIS_Practica_One_Model
             {
                 Console.WriteLine($"ID: {brand.ID} | Название: {brand.Name} | Страна: {brand.Country}");
             }
+
+            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.ReadLine();
         }
 
         static void UpdateCar(Logic logic)
@@ -542,8 +545,8 @@ namespace AIS_Practica_One_Model
                 }
             }
 
-            Console.WriteLine("Бренд не найден.");
             Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.ReadLine();
         }
 
 
@@ -578,8 +581,8 @@ namespace AIS_Practica_One_Model
                 }
             }
 
-            Console.WriteLine("Бренд не найден.");
             Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.ReadLine();
         }
 
 
@@ -591,8 +594,8 @@ namespace AIS_Practica_One_Model
 
             Console.WriteLine("Данные успешно сохранены.");
 
-            Console.WriteLine("Бренд не найден.");
             Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.ReadLine();
         }
 
     }
