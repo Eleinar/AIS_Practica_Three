@@ -83,7 +83,7 @@ namespace AIS_Practica_One_Model
             return true;
         }
 
-        public bool UpdateCar(Car car)
+        public bool UpdateCar(Car car) //Изменить реализацию
         {
             if(car == null)
             {
@@ -165,7 +165,7 @@ namespace AIS_Practica_One_Model
             return true;
         }
 
-        public bool UpdateBrand(Brand brand)
+        public bool UpdateBrand(Brand brand) //Изменить реализацию
         {
             if(brand == null)
             {

@@ -12,6 +12,12 @@ namespace AIS_Practica_One
     public partial class CarForm : Form
     {
         public Car Car { get; private set; }
+
+        /// <summary>
+        /// Конструктор формы для работы с автомобилями
+        /// </summary>
+        /// <param name="logic"></param>
+        /// <param name="car"></param>
         public CarForm(Logic logic, Car? car = null)
         {
             InitializeComponent();

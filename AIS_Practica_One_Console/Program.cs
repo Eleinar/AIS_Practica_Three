@@ -81,7 +81,7 @@ namespace AIS_Practica_One_Model
 
                     default:
                         Console.WriteLine("Неизвестная команда.");
-                        Console.WriteLine("\nНажмите Enter для продолжения...");
+                        Console.WriteLine("\nПродолжить");
                         Console.ReadLine();
                         break;
                 }
@@ -90,9 +90,7 @@ namespace AIS_Practica_One_Model
 
         static void ShowMenu()
         {
-            Console.WriteLine("================================");
-            Console.WriteLine("     УПРАВЛЕНИЕ МАФЫНКАМИ");
-            Console.WriteLine("================================");
+            Console.WriteLine("АВТОПАРК");
 
             Console.WriteLine("1. Показать все автомобили");
             Console.WriteLine("2. Найти автомобиль по ID");
@@ -116,7 +114,6 @@ namespace AIS_Practica_One_Model
 
             Console.WriteLine("12. Сохранить данные");
             Console.WriteLine("0. Выход");
-            Console.WriteLine("================================");
         }
 
         static void PrintCar(Logic logic, Car car)
@@ -143,7 +140,7 @@ namespace AIS_Practica_One_Model
             if(cars.Count == 0)
             {
                 Console.WriteLine("Автомобилей нет");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
+                Console.WriteLine("\nПродолжить");
                 Console.ReadLine();
                 return;
             }
@@ -153,13 +150,13 @@ namespace AIS_Practica_One_Model
                 PrintCar(logic, car);
             }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
         }
 
         static void FindCar(Logic logic)
         {
-            Console.WriteLine("========== ПОИСК АВТОМОБИЛЯ ==========\n");
+            Console.WriteLine("ПОИСК АВТОМОБИЛЯ\n");
 
             int id = ReadInt("Введите ID автомобиля: ");
             Car? car = logic.GetCarById(id);
@@ -173,14 +170,14 @@ namespace AIS_Practica_One_Model
                 PrintCar(logic, car);
             }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
 
         }
 
         static void AddCar(Logic logic)
         {
-            Console.WriteLine("========== ДОБАВЛЕНИЕ АВТОМОБИЛЯ ==========\n");
+            Console.WriteLine("ДОБАВЛЕНИЕ АВТОМОБИЛЯ\n");
 
             ShowAllBrands(logic);
 
@@ -191,7 +188,7 @@ namespace AIS_Practica_One_Model
             if (logic.GetBrandById(brandID) == null)
             {
                 Console.WriteLine("Бренд с таким ID не найден.");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
+                Console.WriteLine("\nПродолжить");
                 Console.ReadLine();
                 return;
             }
@@ -233,20 +230,20 @@ namespace AIS_Practica_One_Model
                 Console.WriteLine("\nНе удалось добавить автомобиль.");
             }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
         }
 
         static void ShowAllBrands(Logic logic)
         {
-            Console.WriteLine("========== БРЕНДЫ ==========\n");
+            Console.WriteLine("БРЕНДЫ\n");
 
             List<Brand> brands = logic.GetAllBrands();
 
             if(brands.Count == 0)
             {
                 Console.WriteLine("Брендов нет");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
+                Console.WriteLine("\nПродолжить");
                 Console.ReadLine();
                 return;
             }
@@ -256,13 +253,13 @@ namespace AIS_Practica_One_Model
                 Console.WriteLine($"ID: {brand.ID} | Название: {brand.Name} | Страна: {brand.Country}");
             }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
         }
 
         static void UpdateCar(Logic logic)
         {
-            Console.WriteLine("========== ИЗМЕНЕНИЕ АВТОМОБИЛЯ ==========\n");
+            Console.WriteLine("ИЗМЕНЕНИЕ ДАННЫХ АВТО\n");
 
             int id = ReadInt("Введите ID автомобиля для изменения: ");
             Car? car = logic.GetCarById(id);
@@ -270,7 +267,7 @@ namespace AIS_Practica_One_Model
             if(car == null)
             {
                 Console.WriteLine("Автомобиль с таким ID не найден.");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
+                Console.WriteLine("\nПродолжить");
                 Console.ReadLine();
                 return;
             }
@@ -281,7 +278,7 @@ namespace AIS_Practica_One_Model
 
         static void DeleteCar(Logic logic)
         {
-            Console.WriteLine("========== УДАЛЕНИЕ АВТОМОБИЛЯ ==========\n");
+            Console.WriteLine("УДАЛЕНИЕ АВТОМОБИЛЯ\n");
 
             int id = ReadInt("Введите ID автомобиля для удаления: ");
 
@@ -290,7 +287,7 @@ namespace AIS_Practica_One_Model
             if(car==null)
             {
                 Console.WriteLine("Автомобиль с таким ID не найден.");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
+                Console.WriteLine("\nПродолжить");
                 Console.ReadLine();
                 return;
             }
@@ -302,7 +299,7 @@ namespace AIS_Practica_One_Model
             if(answer?.ToLower() != "y")
             {
                 Console.WriteLine("Удаление отменено.");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
+                Console.WriteLine("\nПродолжить");
                 Console.ReadLine();
                 return;
             }
@@ -316,7 +313,7 @@ namespace AIS_Practica_One_Model
                 Console.WriteLine("\nНе удалось удалить автомобиль."); 
             }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
 
 
@@ -381,7 +378,7 @@ namespace AIS_Practica_One_Model
 
         static void AddBrand(Logic logic)
         {
-            Console.WriteLine("========== ДОБАВЛЕНИЕ БРЕНДА ==========\n");
+            Console.WriteLine("ДОБАВЛЕНИЕ БРЕНДА\n");
             Console.Write("Название бренда: ");
             string name = ReadString();
             Console.Write("Страна бренда: ");
@@ -401,13 +398,13 @@ namespace AIS_Practica_One_Model
             {
                 Console.WriteLine("\nНе удалось добавить бренд.");
             }
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
         }
 
         static void UpdateBrand(Logic logic)
         {
-            Console.WriteLine("========== ИЗМЕНЕНИЕ БРЕНДА ==========\n");
+            Console.WriteLine("ИЗМЕНЕНИЕ БРЕНДА\n");
 
             ShowAllBrands(logic);
             Console.WriteLine();
@@ -418,7 +415,7 @@ namespace AIS_Practica_One_Model
             if(brand == null)
             {
                 Console.WriteLine("Бренд с таким ID не найден.");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
+                Console.WriteLine("\nПродолжить");
                 Console.ReadLine();
                 return;
             }
@@ -446,7 +443,7 @@ namespace AIS_Practica_One_Model
             {
                 Console.WriteLine("\nНе удалось обновить бренд.");
             }
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
 
 
@@ -454,7 +451,7 @@ namespace AIS_Practica_One_Model
 
         static void DeleteBrand(Logic logic)
         {
-            Console.WriteLine("========== УДАЛЕНИЕ БРЕНДА ==========\n");
+            Console.WriteLine("УДАЛЕНИЕ БРЕНДА\n");
 
             ShowAllBrands(logic);
             Console.WriteLine();
@@ -466,7 +463,7 @@ namespace AIS_Practica_One_Model
             if (brand == null)
             {
                 Console.WriteLine("Бренд не найден.");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
+                Console.WriteLine("\nПродолжить");
                 Console.ReadLine();
                 return;
             }
@@ -484,7 +481,7 @@ namespace AIS_Practica_One_Model
             if (answer?.ToLower() != "y")
             {
                 Console.WriteLine("Удаление отменено.");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
+                Console.WriteLine("\nПродолжить");
                 Console.ReadLine();
                 return;
             }
@@ -499,7 +496,7 @@ namespace AIS_Practica_One_Model
                 Console.WriteLine("\nНе удалось удалить бренд. " +
                     "Возможно, он используется автомобилями.");
             }
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
 
         }
@@ -508,8 +505,7 @@ namespace AIS_Practica_One_Model
 
         static void ShowCarsByBrand(Logic logic)
         {
-            Console.WriteLine(
-                "========== АВТОМОБИЛИ ПО БРЕНДУ ==========\n");
+            Console.WriteLine("--Список авто по бренду--\n");
 
             ShowAllBrands(logic);
 
@@ -523,7 +519,7 @@ namespace AIS_Practica_One_Model
             if (brand == null)
             {
                 Console.WriteLine("Бренд не найден.");
-                Console.WriteLine("\nНажмите Enter для продолжения...");
+                Console.WriteLine("\nПродолжить");
                 return;
             }
 
@@ -545,7 +541,7 @@ namespace AIS_Practica_One_Model
                 }
             }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
         }
 
@@ -554,8 +550,7 @@ namespace AIS_Practica_One_Model
 
         static void ShowCarsByFuelConsumption(Logic logic)
         {
-            Console.WriteLine(
-                "========== ФИЛЬТР ПО РАСХОДУ ==========\n");
+            Console.WriteLine("--Фильтр авто по расходу--\n");
 
             float maxConsumption =
                 ReadFloat(
@@ -581,7 +576,7 @@ namespace AIS_Practica_One_Model
                 }
             }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
         }
 
@@ -594,7 +589,7 @@ namespace AIS_Practica_One_Model
 
             Console.WriteLine("Данные успешно сохранены.");
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nПродолжить");
             Console.ReadLine();
         }
 

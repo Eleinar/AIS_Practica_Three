@@ -6,6 +6,9 @@ namespace AIS_Practica_One
     {
         private readonly Logic _logic;
 
+        /// <summary>
+        /// Конструктор главной формы, загрузка данных
+        /// </summary>
         public Form1()
         {
             InitializeComponent();
@@ -144,5 +147,10 @@ namespace AIS_Practica_One
         }
 
         private void refreshBrandsButton_Click(object sender, EventArgs e) => RefreshBrands();
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

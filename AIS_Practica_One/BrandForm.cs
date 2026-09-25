@@ -13,6 +13,11 @@ namespace AIS_Practica_One
     {
         public Brand Brand { get; private set; }
 
+        /// <summary>
+        /// Конструктор формы для работы с брендами
+        /// </summary>
+        /// <param name="brand"></param>
+
         public BrandForm(Brand? brand = null)
         {
             InitializeComponent();
