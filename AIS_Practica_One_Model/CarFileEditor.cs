@@ -6,6 +6,11 @@ namespace AIS_Practica_One_Model
 {
     internal class CarFileEditor
     {
+        /// <summary>
+        /// Читает список автомобилей из файла по указанному пути
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public List<Car> LoadCars(string filePath)
         {
             List<Car> cars = new List<Car>();
@@ -23,6 +28,7 @@ namespace AIS_Practica_One_Model
                 {
                     continue;
                 }
+       
 
                 string[] properties = line.Split(';');
 
@@ -30,12 +36,16 @@ namespace AIS_Practica_One_Model
                 {
                     continue;
                 }
+                if (cars.Any(c => c.LicensePlate == properties[0].Trim().ToUpper()))
+                {
+                    throw new FormatException($"Повторяющийся номерной знак: {properties[0].Trim().ToUpper()}");
+                }
 
-                try
+                    try
                 {
                     Car car = new Car
                     {
-                        ID = int.Parse(properties[0]),
+                        LicensePlate = properties[0].Trim().ToUpper(),
                         BrandID = int.Parse(properties[1]),
                         ModelName = properties[2],
                         ProductionYear = int.Parse(properties[3]),
@@ -56,6 +66,11 @@ namespace AIS_Practica_One_Model
             return cars;
         }
 
+        /// <summary>
+        /// Сохраняет список автомобилей в файл по указанному пути
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="cars"></param>
         public void SaveCars(string filePath, List<Car> cars)
         {
             string? directory = Path.GetDirectoryName(filePath);
@@ -70,7 +85,7 @@ namespace AIS_Practica_One_Model
             foreach (Car car in cars)
             {
                 string line = 
-                    $"{car.ID};" +
+                    $"{car.LicensePlate};" +
                     $"{car.BrandID};" +
                     $"{car.ModelName};" +
                     $"{car.ProductionYear};" +

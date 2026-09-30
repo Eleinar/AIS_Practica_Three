@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AIS_Practica_One_Model
 {
     public class Logic
     {
-        private List<Car> _cars = new();
-        private List<Brand> _brands = new();
-        private readonly CarFileEditor _carEditor;
-        private readonly BrandFileEditor _brandEditor;
-
+        private readonly List<Car> _cars;
+        private readonly List<Brand> _brands;
+        private readonly CarFileEditor _carEditor = new();
+        private readonly BrandFileEditor _brandEditor = new();
         private readonly string _carsFilePath;
         private readonly string _brandsFilePath;
+        private static readonly Regex PlatePattern = new(@"^[АВЕКМНОРСТУХ][0-9]{3}[АВЕКМНОРСТУХ]{2}[0-9]{2,3}$", RegexOptions.Compiled);
 
+        /// <summary>
+        /// Загружает данные из файлов 
+        /// </summary>
+        /// <param name="dataDirectory"></param>
         public Logic(string dataDirectory)
         {
             _carEditor = new CarFileEditor();
@@ -26,63 +31,100 @@ namespace AIS_Practica_One_Model
             _cars = _carEditor.LoadCars(_carsFilePath);
         }
 
+        /// <summary>
+        /// Проверяет формат госномера
+        /// </summary>
+        /// <param name="plate"></param>
+        /// <returns></returns>
+        public static bool IsValidLicensePlate(string? plate) =>
+            !string.IsNullOrWhiteSpace(plate) && PlatePattern.IsMatch(plate.Trim().ToUpperInvariant());
+
+        /// <summary>
+        /// Сохраняет все данные
+        /// </summary>
         public void SaveAll()
         {
             SaveBrands();
             SaveCars();
         }
 
+        /// <summary>
+        /// Сохраняет данные об авто
+        /// </summary>
         private void SaveCars()
         {
             _carEditor.SaveCars(_carsFilePath, _cars);
         }
 
+        /// <summary>
+        /// Сохраняет данные о брендах
+        /// </summary>
         private void SaveBrands()
         {
             _brandEditor.Save(_brandsFilePath, _brands);
         }
 
-     
+        /// <summary>
+        /// Возвращает список всех автомобилей
+        /// </summary>
+        /// <returns></returns>
         public List<Car> GetAllCars()
         {
             return new List<Car>(_cars);
         }
 
-        public Car? GetCarById(int id)
+        /// <summary>
+        /// Возвращает автомобиль по госномеру
+        /// </summary>
+        /// <param name="plate"></param>
+        /// <returns></returns>
+        public Car? GetCarById(string plate)
         {
-            return _cars.FirstOrDefault(car => car.ID == id);
+            return _cars.FirstOrDefault(car => car.LicensePlate == plate);
         }
 
-     
-        public int GetNextCarID()
+        /// <summary>
+        /// Выполняет поиск по номеру
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public List<Car> SearchCarsByLicensePlate(string? query)
         {
-            if(_cars.Count == 0)
+            if (string.IsNullOrWhiteSpace(query))
             {
-                return 1;
+                return GetAllCars();
             }
-            return _cars.Max(car => car.ID) + 1;
+
+            string trimmedQuery = query.Trim();
+
+            return _cars
+                .Where(c => c.LicensePlate.StartsWith(trimmedQuery, StringComparison.OrdinalIgnoreCase))
+                .ToList();
         }
 
+        /// <summary>
+        /// Добавление записи об авто
+        /// </summary>
+        /// <param name="car"></param>
+        /// <returns></returns>
         public bool AddCar(Car car)
         {
-            if (car == null)
+            if (car == null || !IsValidLicensePlate(car.LicensePlate) ||
+                GetCarById(car.LicensePlate) != null || GetBrandById(car.BrandID) == null)
             {
                 return false;
             }
 
-            bool brandExists = _brands.Any(b => b.ID == car.BrandID);
-
-            if (!brandExists)
-            {
-                return false;
-            }
-
-            car.ID = GetNextCarID();
+            car.LicensePlate = car.LicensePlate.Trim().ToUpper();
             _cars.Add(car);
-
             return true;
         }
 
+        /// <summary>
+        /// Обновление данных авто
+        /// </summary>
+        /// <param name="car"></param>
+        /// <returns></returns>
         public bool UpdateCar(Car car) //Изменить реализацию
         {
             if(car == null)
@@ -97,7 +139,7 @@ namespace AIS_Practica_One_Model
                 return false;
             }
 
-            Car? existingCar = GetCarById(car.ID);
+            Car? existingCar = GetCarById(car.LicensePlate);
 
             if (existingCar == null)
             {
@@ -115,9 +157,14 @@ namespace AIS_Practica_One_Model
             return true;
         }
 
-        public bool DeleteCar(int carID)
+        /// <summary>
+        /// Удаление записи об авто
+        /// </summary>
+        /// <param name="licensePlate"></param>
+        /// <returns></returns>
+        public bool DeleteCar(string licensePlate)
         {
-            Car? car = GetCarById(carID);
+            Car? car = GetCarById(licensePlate);
             if (car == null)
             {
                 return false;
@@ -126,17 +173,30 @@ namespace AIS_Practica_One_Model
             return true;
         }
 
+        /// <summary>
+        /// Возвращает список брендов
+        /// </summary>
+        /// <returns></returns>
         public List<Brand> GetAllBrands()
         {
             return new List<Brand>(_brands);
         }
 
-
+        /// <summary>
+        /// Возвращает бренд с нужным id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public Brand? GetBrandById(int id)
         {
             return _brands.FirstOrDefault(brand => brand.ID == id);
         }
 
+        /// <summary>
+        /// Возвращает имя бренда по id
+        /// </summary>
+        /// <param name="brandId"></param>
+        /// <returns></returns>
         public string GetBrandName(int brandId)
         {
             Brand? brand = GetBrandById(brandId);
@@ -149,6 +209,11 @@ namespace AIS_Practica_One_Model
             return brand.Name;
         }
 
+        /// <summary>
+        /// Добавление записи о бренде
+        /// </summary>
+        /// <param name="brand"></param>
+        /// <returns></returns>
         public bool AddBrand(Brand brand)
         {
             bool alreadyExists = _brands.Any(b =>
@@ -165,6 +230,11 @@ namespace AIS_Practica_One_Model
             return true;
         }
 
+        /// <summary>
+        /// Обновление данных бренда
+        /// </summary>
+        /// <param name="brand"></param>
+        /// <returns></returns>
         public bool UpdateBrand(Brand brand) //Изменить реализацию
         {
             if(brand == null)
@@ -195,6 +265,11 @@ namespace AIS_Practica_One_Model
 
         }
 
+        /// <summary>
+        /// Удаление записи о бренде
+        /// </summary>
+        /// <param name="brandID"></param>
+        /// <returns></returns>
         public bool DeleteBrand(int brandID)
         {
             bool isUsed = _cars.Any(car => car.BrandID == brandID);
@@ -214,6 +289,10 @@ namespace AIS_Practica_One_Model
             return true;
         }
 
+        /// <summary>
+        /// Автоинкремент ID брендов
+        /// </summary>
+        /// <returns></returns>
         public int GetNextBrandID()
         {
             if (_brands.Count == 0)
@@ -222,12 +301,21 @@ namespace AIS_Practica_One_Model
             }
             return _brands.Max(b => b.ID) + 1;
         }
-
+        /// <summary>
+        /// Бизнес-функция получения авто соответствующих бренду
+        /// </summary>
+        /// <param name="brandID"></param>
+        /// <returns></returns>
         public List<Car> GetCarsByBrand(int brandID)
         {
             return _cars.Where(car => car.BrandID == brandID).ToList();
         }
-   
+        
+        /// <summary>
+        /// Бизнес функция получения авто соответствующих расходу
+        /// </summary>
+        /// <param name="maxFuelConsumption"></param>
+        /// <returns></returns>
         public List<Car> GetCarsByFuelConsuption( float maxFuelConsumption)
         {
             return _cars.Where(car => car.FuelConsumption <= maxFuelConsumption).ToList();

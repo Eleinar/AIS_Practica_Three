@@ -10,6 +10,7 @@
         private System.Windows.Forms.FlowLayoutPanel buttonsPanel;
         private System.Windows.Forms.TextBox nameBox, countryBox;
         private System.Windows.Forms.Button saveButton, cancelButton;
+        private System.Windows.Forms.Label nameLabel, countryLabel;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -65,10 +66,13 @@
             // 
             // nameLabel
             // 
+            nameLabel.Dock = DockStyle.Fill;
             nameLabel.Location = new Point(18, 15);
             nameLabel.Name = "nameLabel";
-            nameLabel.Size = new Size(99, 23);
+            nameLabel.Size = new Size(99, 50);
             nameLabel.TabIndex = 0;
+            nameLabel.Text = "Название:";
+            nameLabel.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // nameBox
             // 
@@ -80,10 +84,13 @@
             // 
             // countryLabel
             // 
+            countryLabel.Dock = DockStyle.Fill;
             countryLabel.Location = new Point(18, 65);
             countryLabel.Name = "countryLabel";
-            countryLabel.Size = new Size(99, 23);
+            countryLabel.Size = new Size(99, 65);
             countryLabel.TabIndex = 2;
+            countryLabel.Text = "Страна:";
+            countryLabel.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // countryBox
             // 
@@ -145,7 +152,6 @@
 
         #endregion
 
-        private Label nameLabel;
-        private Label countryLabel;
+
     }
 }

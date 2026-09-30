@@ -28,6 +28,8 @@ namespace AIS_Practica_One
             brandBox.ValueMember = nameof(Brand.ID);
             if (car != null)
             {
+                plateBox.Text = car.LicensePlate;
+                plateBox.ReadOnly = true;
                 brandBox.SelectedValue = car.BrandID;
                 modelBox.Text = car.ModelName;
                 yearBox.Value = Math.Clamp(car.ProductionYear, (int)yearBox.Minimum, (int)yearBox.Maximum);
@@ -43,6 +45,13 @@ namespace AIS_Practica_One
         {
             if (brandBox.SelectedItem is not Brand brand) { MessageBox.Show("Сначала добавьте бренд."); return; }
             if (string.IsNullOrWhiteSpace(modelBox.Text)) { MessageBox.Show("Введите модель."); return; }
+            string plate = plateBox.Text.Trim().ToUpperInvariant();
+            if (!Logic.IsValidLicensePlate(plate))
+            {
+                MessageBox.Show("Номер должен иметь формат А001АА777 (кириллические буквы АВЕКМНОРСТУХ).");
+                return;
+            }
+            Car.LicensePlate = plate;
             Car.BrandID = brand.ID;
             Car.ModelName = modelBox.Text.Trim();
             Car.ProductionYear = (int)yearBox.Value;

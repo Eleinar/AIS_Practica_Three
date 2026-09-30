@@ -2,14 +2,14 @@ using AIS_Practica_One_Model;
 
 namespace AIS_Practica_One
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         private readonly Logic _logic;
 
         /// <summary>
         /// Конструктор главной формы, загрузка данных
         /// </summary>
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             _logic = new Logic("C:\\Users\\eleinar\\source\\repos\\AIS_Practica_One");
@@ -24,7 +24,7 @@ namespace AIS_Practica_One
             carsGrid.DataSource = null;
             carsGrid.DataSource = cars.Select(car => new
             {
-                car.ID,
+                Госномер = car.LicensePlate,
                 Бренд = _logic.GetBrandName(car.BrandID),
                 Модель = car.ModelName,
                 Год = car.ProductionYear,
@@ -48,7 +48,13 @@ namespace AIS_Practica_One
             brandComboBox.ValueMember = nameof(Brand.ID);
         }
 
-        private int? SelectedId(DataGridView grid)
+        private string? SelectedCarPlate()
+        {
+            if (carsGrid.SelectedRows.Count == 0) return null;
+            return carsGrid.SelectedRows[0].Cells["Госномер"].Value?.ToString();
+        }
+
+        private int? SelectedBrandId(DataGridView grid)
         {
             if (grid.SelectedRows.Count == 0) return null;
             return Convert.ToInt32(grid.SelectedRows[0].Cells["ID"].Value);
@@ -58,20 +64,20 @@ namespace AIS_Practica_One
         {
             using var form = new CarForm(_logic);
             if (form.ShowDialog(this) != DialogResult.OK) return;
-            if (!_logic.AddCar(form.Car)) { MessageBox.Show("Не удалось добавить автомобиль. Проверьте бренд."); return; }
+            if (!_logic.AddCar(form.Car)) { MessageBox.Show("Не удалось добавить автомобиль. Проверьте бренд, формат и уникальность госномера."); return; }
             _logic.SaveAll();
             RefreshCars();
         }
 
         private void editCarButton_Click(object sender, EventArgs e)
         {
-            int? id = SelectedId(carsGrid);
-            if (id == null) { MessageBox.Show("Выберите автомобиль."); return; }
-            Car? source = _logic.GetCarById(id.Value);
+            string? plate = SelectedCarPlate();
+            if (plate == null) { MessageBox.Show("Выберите автомобиль."); return; }
+            Car? source = _logic.GetCarById(plate);
             if (source == null) return;
             var copy = new Car
             {
-                ID = source.ID,
+                LicensePlate = source.LicensePlate,
                 BrandID = source.BrandID,
                 ModelName = source.ModelName,
                 ProductionYear = source.ProductionYear,
@@ -89,10 +95,10 @@ namespace AIS_Practica_One
 
         private void deleteCarButton_Click(object sender, EventArgs e)
         {
-            int? id = SelectedId(carsGrid);
-            if (id == null) { MessageBox.Show("Выберите автомобиль."); return; }
+            string? plate = SelectedCarPlate();
+            if (plate == null) { MessageBox.Show("Выберите автомобиль."); return; }
             if (MessageBox.Show("Удалить автомобиль?", "Подтверждение", MessageBoxButtons.YesNo) != DialogResult.Yes) return;
-            if (!_logic.DeleteCar(id.Value)) { MessageBox.Show("Не удалось удалить автомобиль."); return; }
+            if (!_logic.DeleteCar(plate)) { MessageBox.Show("Не удалось удалить автомобиль."); return; }
             _logic.SaveAll();
             RefreshCars();
         }
@@ -110,6 +116,13 @@ namespace AIS_Practica_One
         private void findByFuelButton_Click(object sender, EventArgs e) =>
             ShowCars(_logic.GetCarsByFuelConsuption((float)fuelConsumptionInput.Value));
 
+        private void findByPlateButton_Click(object sender, EventArgs e)
+        {
+            string query = plateSearchBox.Text.Trim();
+            if (query.Length == 0) { RefreshCars(); return; }
+            ShowCars(_logic.SearchCarsByLicensePlate(query));
+        }
+
         private void showAllCarsButton_Click(object sender, EventArgs e) => RefreshCars();
 
         private void addBrandButton_Click(object sender, EventArgs e)
@@ -124,7 +137,7 @@ namespace AIS_Practica_One
 
         private void editBrandButton_Click(object sender, EventArgs e)
         {
-            int? id = SelectedId(brandsGrid);
+            int? id = SelectedBrandId(brandsGrid);
             if (id == null) { MessageBox.Show("Выберите бренд."); return; }
             Brand? source = _logic.GetBrandById(id.Value);
             if (source == null) return;
@@ -138,7 +151,7 @@ namespace AIS_Practica_One
 
         private void deleteBrandButton_Click(object sender, EventArgs e)
         {
-            int? id = SelectedId(brandsGrid);
+            int? id = SelectedBrandId(brandsGrid);
             if (id == null) { MessageBox.Show("Выберите бренд."); return; }
             if (MessageBox.Show("Удалить бренд?", "Подтверждение", MessageBoxButtons.YesNo) != DialogResult.Yes) return;
             if (!_logic.DeleteBrand(id.Value)) { MessageBox.Show("Бренд не найден или используется автомобилями."); return; }
