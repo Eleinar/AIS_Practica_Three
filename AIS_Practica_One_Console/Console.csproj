@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AIS_Practica_One_Model\AIS_Practica_One_Model.csproj" />
+    <ProjectReference Include="..\AIS_Practica_One_Model\Model.csproj" />
   </ItemGroup>
 
 </Project>

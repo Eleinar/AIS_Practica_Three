@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
-namespace AIS_Practica_One_Model
+namespace Model
 {
     public class Program
     {

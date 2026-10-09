@@ -1,4 +1,4 @@
-﻿using AIS_Practica_One_Model;
+﻿using Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace AIS_Practica_One
+namespace WinForms
 {
     public partial class BrandForm : Form
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AIS_Practica_One_Model
+namespace Model
 {
     internal class BrandFileEditor
     {

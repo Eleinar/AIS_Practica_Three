@@ -1,6 +1,6 @@
-using AIS_Practica_One_Model;
+using Model;
 
-namespace AIS_Practica_One
+namespace WinForms
 {
     public partial class MainForm : Form
     {

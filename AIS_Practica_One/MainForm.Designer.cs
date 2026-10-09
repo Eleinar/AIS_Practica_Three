@@ -1,4 +1,4 @@
-﻿namespace AIS_Practica_One
+﻿namespace WinForms
 {
     partial class MainForm //Переименовать форму
     {
