@@ -9,11 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.89" />
-    <PackageReference Include="EntityFramework" Version="6.5.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AIS_Practica_One_Model\Model.csproj" />
   </ItemGroup>
 
