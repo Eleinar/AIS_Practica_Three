@@ -1,21 +1,16 @@
-﻿namespace WinForms
+namespace WinForms
 {
     partial class BrandForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.TableLayoutPanel fieldsPanel;
-        private System.Windows.Forms.FlowLayoutPanel buttonsPanel;
-        private System.Windows.Forms.TextBox nameBox, countryBox;
-        private System.Windows.Forms.Button saveButton, cancelButton;
-        private System.Windows.Forms.Label nameLabel, countryLabel;
+        private System.Windows.Forms.Label nameLabel;
+        private System.Windows.Forms.Label countryLabel;
+        private System.Windows.Forms.TextBox nameBox;
+        private System.Windows.Forms.TextBox countryBox;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Button deleteButton;
+        private System.Windows.Forms.Button cancelButton;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -27,131 +22,78 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
-            fieldsPanel = new TableLayoutPanel();
-            nameLabel = new Label();
-            nameBox = new TextBox();
-            countryLabel = new Label();
-            countryBox = new TextBox();
-            buttonsPanel = new FlowLayoutPanel();
-            cancelButton = new Button();
-            saveButton = new Button();
-            fieldsPanel.SuspendLayout();
-            buttonsPanel.SuspendLayout();
+            nameLabel = new System.Windows.Forms.Label();
+            countryLabel = new System.Windows.Forms.Label();
+            nameBox = new System.Windows.Forms.TextBox();
+            countryBox = new System.Windows.Forms.TextBox();
+            saveButton = new System.Windows.Forms.Button();
+            deleteButton = new System.Windows.Forms.Button();
+            cancelButton = new System.Windows.Forms.Button();
             SuspendLayout();
-            // 
-            // fieldsPanel
-            // 
-            fieldsPanel.ColumnCount = 2;
-            fieldsPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 105F));
-            fieldsPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            fieldsPanel.Controls.Add(nameLabel, 0, 0);
-            fieldsPanel.Controls.Add(nameBox, 1, 0);
-            fieldsPanel.Controls.Add(countryLabel, 0, 1);
-            fieldsPanel.Controls.Add(countryBox, 1, 1);
-            fieldsPanel.Dock = DockStyle.Fill;
-            fieldsPanel.Location = new Point(0, 0);
-            fieldsPanel.Name = "fieldsPanel";
-            fieldsPanel.Padding = new Padding(15);
-            fieldsPanel.RowCount = 2;
-            fieldsPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
-            fieldsPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
-            fieldsPanel.Size = new Size(390, 145);
-            fieldsPanel.TabIndex = 0;
-            // 
-            // nameLabel
-            // 
-            nameLabel.Dock = DockStyle.Fill;
-            nameLabel.Location = new Point(18, 15);
-            nameLabel.Name = "nameLabel";
-            nameLabel.Size = new Size(99, 50);
-            nameLabel.TabIndex = 0;
+
+            nameLabel.AutoSize = true;
+            nameLabel.Location = new System.Drawing.Point(24, 28);
             nameLabel.Text = "Название:";
-            nameLabel.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // nameBox
-            // 
-            nameBox.Dock = DockStyle.Fill;
-            nameBox.Location = new Point(123, 18);
-            nameBox.Name = "nameBox";
-            nameBox.Size = new Size(249, 23);
-            nameBox.TabIndex = 1;
-            // 
-            // countryLabel
-            // 
-            countryLabel.Dock = DockStyle.Fill;
-            countryLabel.Location = new Point(18, 65);
-            countryLabel.Name = "countryLabel";
-            countryLabel.Size = new Size(99, 65);
-            countryLabel.TabIndex = 2;
+
+            nameBox.Location = new System.Drawing.Point(120, 25);
+            nameBox.Size = new System.Drawing.Size(250, 23);
+            nameBox.Anchor = System.Windows.Forms.AnchorStyles.Top
+                | System.Windows.Forms.AnchorStyles.Left
+                | System.Windows.Forms.AnchorStyles.Right;
+
+            countryLabel.AutoSize = true;
+            countryLabel.Location = new System.Drawing.Point(24, 72);
             countryLabel.Text = "Страна:";
-            countryLabel.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // countryBox
-            // 
-            countryBox.Dock = DockStyle.Fill;
-            countryBox.Location = new Point(123, 68);
-            countryBox.Name = "countryBox";
-            countryBox.Size = new Size(249, 23);
-            countryBox.TabIndex = 3;
-            // 
-            // buttonsPanel
-            // 
-            buttonsPanel.Controls.Add(cancelButton);
-            buttonsPanel.Controls.Add(saveButton);
-            buttonsPanel.Dock = DockStyle.Bottom;
-            buttonsPanel.FlowDirection = FlowDirection.RightToLeft;
-            buttonsPanel.Location = new Point(0, 145);
-            buttonsPanel.Name = "buttonsPanel";
-            buttonsPanel.Padding = new Padding(10);
-            buttonsPanel.Size = new Size(390, 55);
-            buttonsPanel.TabIndex = 1;
-            // 
-            // cancelButton
-            // 
-            cancelButton.DialogResult = DialogResult.Cancel;
-            cancelButton.Location = new Point(267, 13);
-            cancelButton.Name = "cancelButton";
-            cancelButton.Size = new Size(100, 30);
-            cancelButton.TabIndex = 0;
+
+            countryBox.Location = new System.Drawing.Point(120, 69);
+            countryBox.Size = new System.Drawing.Size(250, 23);
+            countryBox.Anchor = System.Windows.Forms.AnchorStyles.Top
+                | System.Windows.Forms.AnchorStyles.Left
+                | System.Windows.Forms.AnchorStyles.Right;
+
+            cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            cancelButton.Location = new System.Drawing.Point(24, 120);
+            cancelButton.Size = new System.Drawing.Size(100, 32);
             cancelButton.Text = "Отмена";
-            // 
-            // saveButton
-            // 
-            saveButton.Location = new Point(161, 13);
-            saveButton.Name = "saveButton";
-            saveButton.Size = new Size(100, 30);
-            saveButton.TabIndex = 1;
+            cancelButton.UseVisualStyleBackColor = true;
+
+            deleteButton.Location = new System.Drawing.Point(150, 120);
+            deleteButton.Size = new System.Drawing.Size(100, 32);
+            deleteButton.Text = "Удалить";
+            deleteButton.UseVisualStyleBackColor = true;
+            deleteButton.Click += deleteButton_Click;
+
+            saveButton.Location = new System.Drawing.Point(270, 120);
+            saveButton.Size = new System.Drawing.Size(100, 32);
             saveButton.Text = "Сохранить";
+            saveButton.UseVisualStyleBackColor = true;
             saveButton.Click += saveButton_Click;
-            // 
-            // BrandForm
-            // 
+
             AcceptButton = saveButton;
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
             CancelButton = cancelButton;
-            ClientSize = new Size(390, 200);
-            Controls.Add(fieldsPanel);
-            Controls.Add(buttonsPanel);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(400, 175);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "BrandForm";
-            StartPosition = FormStartPosition.CenterParent;
-            fieldsPanel.ResumeLayout(false);
-            fieldsPanel.PerformLayout();
-            buttonsPanel.ResumeLayout(false);
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            Text = "Бренд";
+
+            Controls.Add(nameLabel);
+            Controls.Add(nameBox);
+            Controls.Add(countryLabel);
+            Controls.Add(countryBox);
+            Controls.Add(cancelButton);
+            Controls.Add(deleteButton);
+            Controls.Add(saveButton);
+
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
-
-
     }
 }

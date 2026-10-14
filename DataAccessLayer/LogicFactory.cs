@@ -1,22 +1,38 @@
-﻿using Model;
+using Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer
 {
-    internal class LogicFactory
+    public static class LogicFactory
     {
-        public static Logic CreateEF(string connectionString)
+        /// <summary>
+        /// Создаёт Logic с репозиториями Entity Framework
+        /// </summary>
+        /// <param name="connectionString">Строка подключения или null для значения по умолчанию</param>
+        /// <returns>Экземпляр бизнес-логики</returns>
+        public static Logic CreateEF(string? connectionString = null)
         {
-            DbContextOptions<AppDbContext> options = new DbContextOptionsBuilder<AppDbContext>().UseNpgsql(connectionString).Options;
+            string cs = connectionString ?? ConnectionSettings.DBConnection();
+            DbContextOptions<AppDbContext> options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseNpgsql(cs)
+                .Options;
 
-            return new Logic(new EntityRepository<Car, string>(options),
-                                new EntityRepository<Brand, int>(options));
+            return new Logic(
+                new EntityRepository<Car, string>(options),
+                new EntityRepository<Brand, int>(options));
         }
 
-        public static Logic CreateDapper(string connectionString)
+        /// <summary>
+        /// Создаёт Logic с репозиториями Dapper
+        /// </summary>
+        /// <param name="connectionString">Строка подключения или null для значения по умолчанию</param>
+        /// <returns>Экземпляр бизнес-логики</returns>
+        public static Logic CreateDapper(string? connectionString = null)
         {
-            return new Logic(new DapperRepository<Car, string>(connectionString),
-                                new DapperRepository<Brand, int>(connectionString));
+            string cs = connectionString ?? ConnectionSettings.DBConnection();
+            return new Logic(
+                new DapperRepository<Car, string>(cs),
+                new DapperRepository<Brand, int>(cs));
         }
     }
 }

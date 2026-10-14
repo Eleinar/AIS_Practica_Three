@@ -1,4 +1,4 @@
-﻿using Model;
+using Model;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
@@ -24,12 +24,14 @@ namespace DataAccessLayer
 
             Type type = typeof(T);
 
-            string table = type.GetCustomAttribute<TableAttribute>()?.Name;
+            string table = type.GetCustomAttribute<TableAttribute>()?.Name
+                ?? throw new InvalidOperationException($"Тип {type.Name} не помечен атрибутом [Table].");
 
             PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance).
                 Where(p => p.CanRead && p.CanWrite && p.GetCustomAttribute<NotMappedAttribute>() == null).ToArray();
 
-            _keyProperty = props.SingleOrDefault(p => p.GetCustomAttribute<KeyAttribute>() != null);
+            _keyProperty = props.SingleOrDefault(p => p.GetCustomAttribute<KeyAttribute>() != null)
+                ?? throw new InvalidOperationException($"Тип {type.Name} не имеет свойства с атрибутом [Key].");
 
                _keyGenerated = _keyProperty.GetCustomAttribute<DatabaseGeneratedAttribute>()?.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity;
 
@@ -38,12 +40,13 @@ namespace DataAccessLayer
 
             string keyColumn = Column(_keyProperty);
             string selectColumns = string.Join(", ", props.Select(SelectItem));
-            string insertColumns = string.Join(", ", insertProps.Select(p => "@" + p.Name));
-            string updateSet = string.Join(", ", dataProps.Select(p => Column(p) + " =@" + p.Name));
+            string insertColumnList = string.Join(", ", insertProps.Select(Column));
+            string insertValueList = string.Join(", ", insertProps.Select(p => "@" + p.Name));
+            string updateSet = string.Join(", ", dataProps.Select(p => Column(p) + " = @" + p.Name));
 
             _selectAll = $"SELECT {selectColumns} FROM {table}";
             _selectById = $"SELECT {selectColumns} FROM {table} WHERE {keyColumn} = @Id";
-            _insert = $"INSERT INTO {table} ({insertColumns}) VALUES ({insertColumns})";
+            _insert = $"INSERT INTO {table} ({insertColumnList}) VALUES ({insertValueList})";
             if(_keyGenerated)
             {
                 _insert += $" RETURNING {keyColumn}";
