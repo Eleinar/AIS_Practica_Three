@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text;
 using Model;
-using DataAccessLayer;
+using BusinessLogic;
 
 namespace ConsoleApp
 {

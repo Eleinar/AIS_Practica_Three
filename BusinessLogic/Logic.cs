@@ -1,7 +1,12 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
+using Model;
+using DataAccessLayer;
 
-namespace Model
+namespace BusinessLogic
 {
+    /// <summary>
+    /// Бизнес-логика работы с автомобилями и брендами
+    /// </summary>
     public class Logic
    {    
        private readonly IRepository<Car, string> _cars;
@@ -11,22 +16,27 @@ namespace Model
         /// <summary>
         /// Передача репозиториев
         /// </summary>
-        /// <param name="cars"></param>
-        /// <param name="brands"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="cars">Репозиторий автомобилей</param>
+        /// <param name="brands">Репозиторий брендов</param>
+        /// <exception cref="ArgumentNullException">Если один из репозиториев равен null</exception>
         public Logic(IRepository<Car, string> cars, IRepository<Brand, int> brands)
         {
             _cars = cars ?? throw new ArgumentNullException(nameof(cars));
             _brands = brands ?? throw new ArgumentNullException(nameof(brands));
         }
 
+        /// <summary>
+        /// Приводит госномер к верхнему регистру без пробелов
+        /// </summary>
+        /// <param name="plate">Исходный госномер</param>
+        /// <returns>Нормализованный госномер</returns>
         private static string NormalizePlate(string plate) => plate.Trim().ToUpperInvariant();
 
         /// <summary>
         /// Проверяет формат госномера
         /// </summary>
-        /// <param name="plate"></param>
-        /// <returns></returns>
+        /// <param name="plate">Проверяемый госномер</param>
+        /// <returns>true, если формат корректен</returns>
         public static bool IsValidLicensePlate(string? plate) =>
             !string.IsNullOrWhiteSpace(plate) && PlatePattern.IsMatch(plate.Trim().ToUpperInvariant());
 
@@ -35,7 +45,7 @@ namespace Model
         /// <summary>
         /// Возвращает список всех автомобилей
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Список всех автомобилей</returns>
         public List<Car> GetAllCars()
         {
             return _cars.ReadAll();
@@ -45,8 +55,8 @@ namespace Model
         /// <summary>
         /// Возвращает автомобиль по госномеру
         /// </summary>
-        /// <param name="plate"></param>
-        /// <returns></returns>
+        /// <param name="plate">Госномер</param>
+        /// <returns>Автомобиль или null</returns>
         public Car? GetCarById(string plate)
         {
             return _cars.ReadById(NormalizePlate(plate));
@@ -57,8 +67,8 @@ namespace Model
         /// <summary>
         /// Обновление данных авто
         /// </summary>
-        /// <param name="car"></param>
-        /// <returns></returns>
+        /// <param name="car">Автомобиль с обновлёнными данными</param>
+        /// <returns>true, если обновление успешно</returns>
         public bool UpdateCar(Car car) //Изменить реализацию
         {
             if (car == null || GetBrandById(car.BrandID) == null)
@@ -73,8 +83,8 @@ namespace Model
         /// <summary>
         /// Добавление записи об авто
         /// </summary>
-        /// <param name="car"></param>
-        /// <returns></returns>
+        /// <param name="car">Новый автомобиль</param>
+        /// <returns>true, если добавление успешно</returns>
         public bool AddCar(Car car)
         {
             if (car == null || !IsValidLicensePlate(car.LicensePlate) ||
@@ -92,8 +102,8 @@ namespace Model
         /// <summary>
         /// Удаление записи об авто
         /// </summary>
-        /// <param name="licensePlate"></param>
-        /// <returns></returns>
+        /// <param name="licensePlate">Госномер удаляемого автомобиля</param>
+        /// <returns>true, если удаление успешно</returns>
         public bool DeleteCar(string licensePlate)
         {
             return _cars.Delete(NormalizePlate(licensePlate));
@@ -109,7 +119,7 @@ namespace Model
         /// <summary>
         /// Возвращает список брендов
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Список всех брендов</returns>
         public List<Brand> GetAllBrands()
         {
             return _brands.ReadAll();
@@ -118,8 +128,8 @@ namespace Model
         /// <summary>
         /// Возвращает бренд с нужным id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Идентификатор бренда</param>
+        /// <returns>Бренд или null</returns>
         public Brand? GetBrandById(int id)
         {
             return _brands.ReadById(id);
@@ -128,8 +138,8 @@ namespace Model
         /// <summary>
         /// Возвращает имя бренда по id
         /// </summary>
-        /// <param name="brandId"></param>
-        /// <returns></returns>
+        /// <param name="brandId">Идентификатор бренда</param>
+        /// <returns>Название бренда или «Неизвестный бренд»</returns>
         public string GetBrandName(int brandId)
         {
             Brand? brand = GetBrandById(brandId);
@@ -145,8 +155,8 @@ namespace Model
         /// <summary>
         /// Добавление записи о бренде
         /// </summary>
-        /// <param name="brand"></param>
-        /// <returns></returns>
+        /// <param name="brand">Новый бренд</param>
+        /// <returns>true, если добавление успешно</returns>
         public bool AddBrand(Brand brand)
         {
             bool alreadyExists = _brands.ReadAll().Any(b =>
@@ -165,8 +175,8 @@ namespace Model
         /// <summary>
         /// Обновление данных бренда
         /// </summary>
-        /// <param name="brand"></param>
-        /// <returns></returns>
+        /// <param name="brand">Бренд с обновлёнными данными</param>
+        /// <returns>true, если обновление успешно</returns>
         public bool UpdateBrand(Brand brand) //Изменить реализацию
         {
             if(brand == null)
@@ -197,8 +207,8 @@ namespace Model
         /// <summary>
         /// Удаление записи о бренде
         /// </summary>
-        /// <param name="brandID"></param>
-        /// <returns></returns>
+        /// <param name="brandID">Идентификатор удаляемого бренда</param>
+        /// <returns>true, если удаление успешно</returns>
         public bool DeleteBrand(int brandID)
         {
             bool isUsed = _cars.ReadAll().Any(car => car.BrandID == brandID);
@@ -219,8 +229,8 @@ namespace Model
         /// <summary>
         /// Бизнес-функция получения авто соответствующих бренду
         /// </summary>
-        /// <param name="brandID"></param>
-        /// <returns></returns>
+        /// <param name="brandID">Идентификатор бренда</param>
+        /// <returns>Список автомобилей бренда</returns>
         public List<Car> GetCarsByBrand(int brandID)
         {
             return _cars.ReadAll().Where(car => car.BrandID == brandID).ToList();
@@ -229,8 +239,8 @@ namespace Model
         /// <summary>
         /// Бизнес функция получения авто соответствующих расходу
         /// </summary>
-        /// <param name="maxFuelConsumption"></param>
-        /// <returns></returns>
+        /// <param name="maxFuelConsumption">Максимальный расход топлива</param>
+        /// <returns>Список автомобилей с расходом не выше заданного</returns>
         public List<Car> GetCarsByFuelConsuption( float maxFuelConsumption)
         {
             return _cars.ReadAll().Where(car => car.FuelConsumption <= maxFuelConsumption).ToList();
@@ -239,8 +249,8 @@ namespace Model
         /// <summary>
         /// Выполняет поиск по номеру
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
+        /// <param name="query">Начало или полный госномер</param>
+        /// <returns>Список найденных автомобилей</returns>
         public List<Car> SearchCarsByLicensePlate(string? query)
         {
             if (string.IsNullOrWhiteSpace(query))
