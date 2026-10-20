@@ -1,5 +1,5 @@
 using Model;
-using DataAccessLayer;
+using BusinessLogic;
 
 namespace WinForms
 {

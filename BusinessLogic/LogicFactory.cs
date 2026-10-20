@@ -1,8 +1,12 @@
 using Model;
+using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccessLayer
+namespace BusinessLogic
 {
+    /// <summary>
+    /// Фабрика создания бизнес-логики с выбранным способом доступа к данным
+    /// </summary>
     public static class LogicFactory
     {
         /// <summary>

@@ -1,8 +1,5 @@
 <Solution>
-  <Folder Name="/Data/">
-    <File Path="Brands.csv" />
-    <File Path="Cars.csv" />
-  </Folder>
+  <Project Path="BusinessLogic/BusinessLogic.csproj" Id="dca849d4-602b-4543-a0f5-6f794c0b7b3b" />
   <Project Path="Console/Console.csproj" />
   <Project Path="DataAccessLayer/DataAccessLayer.csproj" Id="6b987c0c-9aca-44ab-8394-d9ceec3c674f" />
   <Project Path="Model/Model.csproj" />

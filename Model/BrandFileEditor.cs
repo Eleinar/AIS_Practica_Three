@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +6,11 @@ namespace Model
 {
     internal class BrandFileEditor
     {
+        /// <summary>
+        /// Загружает список брендов из файла
+        /// </summary>
+        /// <param name="filePath">Путь к файлу</param>
+        /// <returns>Список брендов</returns>
         public List<Brand> Load(string filePath)
         {
             List<Brand> brands = new List<Brand>();
@@ -48,6 +53,11 @@ namespace Model
             return brands;
         }
 
+        /// <summary>
+        /// Сохраняет список брендов в файл
+        /// </summary>
+        /// <param name="filePath">Путь к файлу</param>
+        /// <param name="brands">Список брендов</param>
         public void Save(string filePath, List<Brand> brands)
         {
             string? directoryPath = Path.GetDirectoryName(filePath);
