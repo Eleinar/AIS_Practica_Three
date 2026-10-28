@@ -7,8 +7,8 @@ namespace BusinessLogic
     /// Бизнес-логика работы с автомобилями и брендами
     /// </summary>
     public class Logic
-   {    
-       private readonly IRepository<Car, string> _cars;
+    {
+        private readonly IRepository<Car, string> _cars;
         private readonly IRepository<Brand, int> _brands;
         private readonly ILicensePlateValidator _plateValidator;
 
@@ -111,11 +111,11 @@ namespace BusinessLogic
             return _cars.Delete(NormalizePlate(licensePlate));
         }
 
-        #endregion    
+        #endregion
 
-        
 
-    
+
+
 
         #region Бренды
         /// <summary>
@@ -164,11 +164,11 @@ namespace BusinessLogic
             bool alreadyExists = _brands.ReadAll().Any(b =>
                                              b.Name.Equals(brand.Name, StringComparison.OrdinalIgnoreCase));
 
-            if(alreadyExists)
+            if (alreadyExists)
             {
                 return false;
             }
-      
+
             _brands.Add(brand);
 
             return true;
@@ -181,7 +181,7 @@ namespace BusinessLogic
         /// <returns>true, если обновление успешно</returns>
         public bool UpdateBrand(Brand brand) //Изменить реализацию
         {
-            if(brand == null)
+            if (brand == null)
             {
                 return false;
             }
@@ -200,7 +200,7 @@ namespace BusinessLogic
                 return false;
             }
 
-            
+
 
             return _brands.Update(brand);
 
@@ -215,7 +215,7 @@ namespace BusinessLogic
         {
             bool isUsed = _cars.ReadAll().Any(car => car.BrandID == brandID);
 
-            if(isUsed)
+            if (isUsed)
             {
                 return false;
             }
@@ -223,7 +223,7 @@ namespace BusinessLogic
             return _brands.Delete(brandID);
         }
 
-       
+
         #endregion
 
 
@@ -237,13 +237,13 @@ namespace BusinessLogic
         {
             return _cars.ReadAll().Where(car => car.BrandID == brandID).ToList();
         }
-        
+
         /// <summary>
         /// Бизнес функция получения авто соответствующих расходу
         /// </summary>
         /// <param name="maxFuelConsumption">Максимальный расход топлива</param>
         /// <returns>Список автомобилей с расходом не выше заданного</returns>
-        public List<Car> GetCarsByFuelConsuption( float maxFuelConsumption)
+        public List<Car> GetCarsByFuelConsuption(float maxFuelConsumption)
         {
             return _cars.ReadAll().Where(car => car.FuelConsumption <= maxFuelConsumption).ToList();
         }

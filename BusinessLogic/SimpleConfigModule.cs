@@ -1,36 +1,41 @@
-﻿using DataAccessLayer;
+using DataAccessLayer;
+using Microsoft.EntityFrameworkCore;
 using Ninject.Modules;
 
 namespace BusinessLogic
 {
+    /// <summary>
+    /// Модуль Ninject: сопоставление абстракций с реализациями (DIP).
+    /// Репозитории регистрируются как Singleton.
+    /// </summary>
+    public class SimpleConfigModule : NinjectModule
+    {
         /// <summary>
-        /// Общая часть регистрации зависимостей. Наследники регистрируют репозитории
+        /// Регистрирует зависимости контейнера
         /// </summary>
-        public abstract class SimpleConfigModule : NinjectModule
+        public override void Load()
         {
-            /// <summary>
-            /// Строка подключения к базе данных
-            /// </summary>
-            protected string ConnectionString { get; }
+            // Параметры EF-контекста — один раз на приложение
+            Bind<DbContextOptions<AppDbContext>>()
+                .ToMethod(_ =>
+                {
+                    string cs = ConnectionSettings.DBConnection();
+                    return new DbContextOptionsBuilder<AppDbContext>()
+                        .UseNpgsql(cs)
+                        .Options;
+                })
+                .InSingletonScope();
 
-            /// <param name="connectionString">Строка подключения или null для значения по умолчанию</param>
-            protected SimpleConfigModule(string? connectionString = null)
-            {
-                ConnectionString = connectionString ?? ConnectionSettings.DBConnection();
-            }
+           
+            // Можно заменить на typeof(DapperRepository<,>), если нужна реализация на Dapper
+            Bind(typeof(IRepository<,>))
+                .To(typeof(EntityRepository<,>))
+                .InSingletonScope();
 
-            /// <summary>
-            /// Регистрирует общие зависимости и вызывает регистрацию репозиториев
-            /// </summary>
-            public override void Load()
-            {
-                Bind<ILicensePlateValidator>().To<LicensePlateValidator>().InSingletonScope();
-                BindRepositories();
-            }
+            // Бизнес-логика: зависимости подставятся автоматически через конструктор
+            Bind<Logic>().ToSelf();
 
-            /// <summary>
-            /// Сопоставляет IRepository с конкретной реализацией
-            /// </summary>
-            protected abstract void BindRepositories();
+            Bind<ILicensePlateValidator>().To<LicensePlateValidator>().InSingletonScope();
         }
+    }
 }

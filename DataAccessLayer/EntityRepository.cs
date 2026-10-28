@@ -34,7 +34,7 @@ namespace DataAccessLayer
         /// Добавляет сущность в базу данных
         /// </summary>
         /// <param name="entity">Добавляемая сущность</param>
-        public void Add(T entity)
+        public virtual void Add(T entity)
         {
             using AppDbContext context = CreateContext();
             context.Set<T>().Add(entity);
@@ -46,7 +46,7 @@ namespace DataAccessLayer
         /// </summary>
         /// <param name="entity">Сущность с новыми данными</param>
         /// <returns>true, если сохранение прошло успешно</returns>
-        public bool Update(T entity)
+        public virtual bool Update(T entity)
         {
             using AppDbContext context = CreateContext();
             context.Set<T>().Update(entity);
@@ -67,7 +67,7 @@ namespace DataAccessLayer
         /// </summary>
         /// <param name="id">Идентификатор сущности</param>
         /// <returns>true, если сущность найдена и удалена</returns>
-        public bool Delete(TKey id)
+        public virtual bool Delete(TKey id)
         {
             using AppDbContext context = CreateContext();
             T? entity = context.Set<T>().Find(new object?[] { id });
@@ -87,7 +87,7 @@ namespace DataAccessLayer
         /// </summary>
         /// <param name="id">Идентификатор сущности</param>
         /// <returns>Сущность или null</returns>
-        public T? ReadById(TKey id)
+        public virtual T? ReadById(TKey id)
         {
             using AppDbContext context = CreateContext();
             return context.Set<T>().Find(new object?[] { id });
@@ -97,7 +97,7 @@ namespace DataAccessLayer
         /// Возвращает все сущности без отслеживания изменений
         /// </summary>
         /// <returns>Список всех сущностей</returns>
-        public List<T> ReadAll()
+        public virtual List<T> ReadAll()
         {
             using AppDbContext context = CreateContext();
             return context.Set<T>().AsNoTracking().ToList();

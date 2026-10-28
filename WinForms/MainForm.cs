@@ -9,8 +9,9 @@ namespace WinForms
         private float _lastCardScale = 1f;
 
         /// <summary>
-        /// Конструктор главной формы, инициализация логики и загрузка данных
+        /// Конструктор главной формы с внедрением бизнес-логики (DIP / IoC)
         /// </summary>
+        /// <param name="logic">Экземпляр бизнес-логики, полученный из IoC-контейнера</param>
         public MainForm(Logic logic)
         {
             InitializeComponent();

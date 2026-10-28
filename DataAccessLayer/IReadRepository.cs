@@ -1,16 +1,18 @@
-﻿using Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Model;
 
 namespace DataAccessLayer
 {
+    /// <summary>
+    /// Интерфейс чтения сущностей (ISP: клиенты только для чтения не зависят от записи)
+    /// </summary>
+    /// <typeparam name="T">Тип сущности</typeparam>
+    /// <typeparam name="Tkey">Тип первичного ключа</typeparam>
     public interface IReadRepository<T, Tkey> where T : class, IDomainObject<Tkey>
     {
         /// <summary>
-        /// Возврашает запись по идентификатору
+        /// Возвращает запись по идентификатору
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Идентификатор записи</param>
         /// <returns>Сущность или null, если не найдена</returns>
         T? ReadById(Tkey id);
 

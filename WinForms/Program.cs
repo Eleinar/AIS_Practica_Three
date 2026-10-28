@@ -6,16 +6,17 @@ namespace WinForms
     internal static class Program
     {
         /// <summary>
-        ///  The main entry point for the application.
+        /// Точка входа: создание IoC-контейнера и получение Logic с внедрёнными зависимостями
         /// </summary>
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            IKernel ninjectKernel = new StandardKernel(new EfConfigModule());
+            // IoC (Ninject): модуль из слоя BusinessLogic регистрирует IRepository 
+            IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
+
+            // Автоматическое внедрение IRepository в конструктор Logic
             Logic logic = ninjectKernel.Get<Logic>();
 
             Application.Run(new MainForm(logic));

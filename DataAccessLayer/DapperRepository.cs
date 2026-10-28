@@ -104,7 +104,7 @@ namespace DataAccessLayer
         /// Добавляет сущность в базу данных
         /// </summary>
         /// <param name="item">Добавляемая сущность</param>
-        public void Add(T item)
+        public virtual void Add(T item)
         {
             using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
             if (_keyGenerated)
@@ -123,7 +123,7 @@ namespace DataAccessLayer
         /// </summary>
         /// <param name="item">Сущность с новыми данными</param>
         /// <returns>true, если затронута хотя бы одна строка</returns>
-        public bool Update(T item)
+        public virtual bool Update(T item)
         {
             using NpgsqlConnection connection = new(_connectionString);
             return connection.Execute(_update, item) > 0;
@@ -134,7 +134,7 @@ namespace DataAccessLayer
         /// </summary>
         /// <param name="id">Идентификатор сущности</param>
         /// <returns>true, если затронута хотя бы одна строка</returns>
-        public bool Delete(Tkey id)
+        public virtual bool Delete(Tkey id)
         {
             using NpgsqlConnection connection = new(_connectionString);
             return connection.Execute(_delete, IdParameter(id)) > 0;
@@ -145,7 +145,7 @@ namespace DataAccessLayer
         /// </summary>
         /// <param name="id">Идентификатор сущности</param>
         /// <returns>Сущность или null</returns>
-        public T? ReadById(Tkey id)
+        public virtual T? ReadById(Tkey id)
         {
             using NpgsqlConnection connection = new(_connectionString);
             return connection.QuerySingleOrDefault<T>(_selectById, IdParameter(id));
@@ -155,7 +155,7 @@ namespace DataAccessLayer
         /// Возвращает все сущности
         /// </summary>
         /// <returns>Список всех сущностей</returns>
-        public List<T> ReadAll()
+        public virtual List<T> ReadAll()
         {
             using NpgsqlConnection connection = new(_connectionString);
             return connection.Query<T>(_selectAll).ToList();

@@ -23,8 +23,10 @@ namespace ConsoleApp
             Logic logic;
             try
             {
-                IKernel ninjectKernel = new StandardKernel(new DapperConfigModule());
+                // IoC (Ninject): контейнер из BusinessLogic, репозитории — Singleton
+                IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
                 logic = ninjectKernel.Get<Logic>();
+                // Проверка доступности БД при старте
                 _ = logic.GetAllBrands();
             }
             catch (Exception ex)
