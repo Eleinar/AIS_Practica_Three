@@ -29,7 +29,7 @@ namespace BusinessLogic
             }
 
             /// <summary>
-            /// Сопоставляет IRepository с конкретной реализацией (Singleton)
+            /// Сопоставляет IRepository с конкретной реализацией
             /// </summary>
             protected abstract void BindRepositories();
         }
