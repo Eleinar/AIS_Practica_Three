@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Model;
 using DataAccessLayer;
 
@@ -11,18 +10,22 @@ namespace BusinessLogic
    {    
        private readonly IRepository<Car, string> _cars;
         private readonly IRepository<Brand, int> _brands;
-        private static readonly Regex PlatePattern = new(@"^[АВЕКМНОРСТУХ][0-9]{3}[АВЕКМНОРСТУХ]{2}[0-9]{2,3}$", RegexOptions.Compiled);
+        private readonly ILicensePlateValidator _plateValidator;
+
 
         /// <summary>
         /// Передача репозиториев
         /// </summary>
         /// <param name="cars">Репозиторий автомобилей</param>
         /// <param name="brands">Репозиторий брендов</param>
+        /// <param name="plateValidator">Валидатор госномеров</param>
         /// <exception cref="ArgumentNullException">Если один из репозиториев равен null</exception>
-        public Logic(IRepository<Car, string> cars, IRepository<Brand, int> brands)
+        public Logic(IRepository<Car, string> cars, IRepository<Brand, int> brands,
+              ILicensePlateValidator plateValidator)
         {
             _cars = cars ?? throw new ArgumentNullException(nameof(cars));
             _brands = brands ?? throw new ArgumentNullException(nameof(brands));
+            _plateValidator = plateValidator ?? throw new ArgumentNullException(nameof(plateValidator));
         }
 
         /// <summary>
@@ -37,8 +40,7 @@ namespace BusinessLogic
         /// </summary>
         /// <param name="plate">Проверяемый госномер</param>
         /// <returns>true, если формат корректен</returns>
-        public static bool IsValidLicensePlate(string? plate) =>
-            !string.IsNullOrWhiteSpace(plate) && PlatePattern.IsMatch(plate.Trim().ToUpperInvariant());
+        public bool IsValidLicensePlate(string? plate) => _plateValidator.IsValid(plate);
 
         #region Авто
 

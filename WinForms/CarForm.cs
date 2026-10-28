@@ -139,7 +139,7 @@ namespace WinForms
             }
 
             string plate = plateBox.Text.Trim().ToUpperInvariant();
-            if (!Logic.IsValidLicensePlate(plate))
+            if (!_logic.IsValidLicensePlate(plate))
             {
                 MessageBox.Show("Номер должен иметь формат А001АА777 (кириллические буквы АВЕКМНОРСТУХ).");
                 return;

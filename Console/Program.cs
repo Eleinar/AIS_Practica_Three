@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using Model;
 using BusinessLogic;
+using Ninject;
 
 namespace ConsoleApp
 {
@@ -22,8 +23,8 @@ namespace ConsoleApp
             Logic logic;
             try
             {
-                logic = LogicFactory.CreateEF();
-                // Проверка доступности БД при старте
+                IKernel ninjectKernel = new StandardKernel(new DapperConfigModule());
+                logic = ninjectKernel.Get<Logic>();
                 _ = logic.GetAllBrands();
             }
             catch (Exception ex)
@@ -200,7 +201,7 @@ namespace ConsoleApp
             Console.Write("Госномер (формат А001АА777): ");
             string plate = ReadString().ToUpperInvariant();
 
-            if (!Logic.IsValidLicensePlate(plate))
+            if (!logic.IsValidLicensePlate(plate))
             {
                 Console.WriteLine("Неверный формат госномера. Используйте кириллические буквы АВЕКМНОРСТУХ.");
                 Pause();

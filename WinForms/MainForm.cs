@@ -11,10 +11,10 @@ namespace WinForms
         /// <summary>
         /// Конструктор главной формы, инициализация логики и загрузка данных
         /// </summary>
-        public MainForm()
+        public MainForm(Logic logic)
         {
             InitializeComponent();
-            _logic = LogicFactory.CreateEF();
+            _logic = logic ?? throw new ArgumentNullException(nameof(logic));
             EnsureCarsTabLayout();
             brandsCardsPanel.WrapContents = false;
             brandsCardsPanel.FlowDirection = FlowDirection.TopDown;

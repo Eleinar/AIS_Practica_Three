@@ -1,3 +1,6 @@
+using BusinessLogic;
+using Ninject;
+
 namespace WinForms
 {
     internal static class Program
@@ -11,7 +14,11 @@ namespace WinForms
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new MainForm());
+
+            IKernel ninjectKernel = new StandardKernel(new EfConfigModule());
+            Logic logic = ninjectKernel.Get<Logic>();
+
+            Application.Run(new MainForm(logic));
         }
     }
 }
