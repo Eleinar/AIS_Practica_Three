@@ -20,14 +20,16 @@ namespace ConsoleApp
             Console.OutputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
             Console.InputEncoding = Encoding.UTF8;
 
-            Logic logic;
+            CrudLogic crud;
+            BusinessLogic.BusinessLogic business;
             try
             {
                 // IoC (Ninject): контейнер из BusinessLogic, репозитории — Singleton
                 IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
-                logic = ninjectKernel.Get<Logic>();
+                crud = ninjectKernel.Get<CrudLogic>();
+                business = ninjectKernel.Get<BusinessLogic.BusinessLogic>();
                 // Проверка доступности БД при старте
-                _ = logic.GetAllBrands();
+                _ = crud.GetAllBrands();
             }
             catch (Exception ex)
             {
@@ -54,17 +56,17 @@ namespace ConsoleApp
                 {
                     switch (choice)
                     {
-                        case "1": ShowAllCars(logic); break;
-                        case "2": FindCar(logic); break;
-                        case "3": AddCar(logic); break;
-                        case "4": UpdateCar(logic); break;
-                        case "5": DeleteCar(logic); break;
-                        case "6": ShowAllBrands(logic); break;
-                        case "7": AddBrand(logic); break;
-                        case "8": UpdateBrand(logic); break;
-                        case "9": DeleteBrand(logic); break;
-                        case "10": ShowCarsByBrand(logic); break;
-                        case "11": ShowCarsByFuelConsumption(logic); break;
+                        case "1": ShowAllCars(crud); break;
+                        case "2": FindCar(business, crud); break;
+                        case "3": AddCar(crud); break;
+                        case "4": UpdateCar(crud); break;
+                        case "5": DeleteCar(crud); break;
+                        case "6": ShowAllBrands(crud); break;
+                        case "7": AddBrand(crud); break;
+                        case "8": UpdateBrand(crud); break;
+                        case "9": DeleteBrand(crud); break;
+                        case "10": ShowCarsByBrand(business, crud); break;
+                        case "11": ShowCarsByFuelConsumption(business, crud); break;
                         case "0": return;
                         default:
                             Console.WriteLine("Неизвестная команда.");
@@ -118,11 +120,11 @@ namespace ConsoleApp
         /// <summary>
         /// Выводит данные одного автомобиля
         /// </summary>
-        private static void PrintCar(Logic logic, Car car)
+        private static void PrintCar(CrudLogic crud, Car car)
         {
             Console.WriteLine("----------------------------------------");
             Console.WriteLine($"Госномер:   {car.LicensePlate}");
-            Console.WriteLine($"Бренд:      {logic.GetBrandName(car.BrandID)}");
+            Console.WriteLine($"Бренд:      {crud.GetBrandName(car.BrandID)}");
             Console.WriteLine($"Модель:     {car.ModelName}");
             Console.WriteLine($"Год:        {car.ProductionYear}");
             Console.WriteLine($"Мощность:   {car.HorsePower} л.с.");
@@ -135,7 +137,7 @@ namespace ConsoleApp
         /// <summary>
         /// Выводит список автомобилей и ждёт подтверждения
         /// </summary>
-        private static void PrintCars(Logic logic, List<Car> cars)
+        private static void PrintCars(CrudLogic crud, List<Car> cars)
         {
             if (cars.Count == 0)
             {
@@ -145,7 +147,7 @@ namespace ConsoleApp
             {
                 Console.WriteLine($"Найдено: {cars.Count}\n");
                 foreach (Car car in cars)
-                    PrintCar(logic, car);
+                    PrintCar(crud, car);
                 Console.WriteLine("----------------------------------------");
             }
             Pause();
@@ -154,9 +156,9 @@ namespace ConsoleApp
         /// <summary>
         /// Выводит список брендов без паузы (для выбора ID)
         /// </summary>
-        private static void ListBrands(Logic logic)
+        private static void ListBrands(CrudLogic crud)
         {
-            List<Brand> brands = logic.GetAllBrands();
+            List<Brand> brands = crud.GetAllBrands();
             if (brands.Count == 0)
             {
                 Console.WriteLine("Бренды не найдены.");
@@ -177,33 +179,33 @@ namespace ConsoleApp
         /// <summary>
         /// Показывает все автомобили
         /// </summary>
-        private static void ShowAllCars(Logic logic)
+        private static void ShowAllCars(CrudLogic crud)
         {
             Console.WriteLine("АВТОМОБИЛИ\n");
-            PrintCars(logic, logic.GetAllCars());
+            PrintCars(crud, crud.GetAllCars());
         }
 
         /// <summary>
         /// Поиск автомобилей по госномеру (или его началу)
         /// </summary>
-        private static void FindCar(Logic logic)
+        private static void FindCar(BusinessLogic.BusinessLogic business, CrudLogic crud)
         {
             Console.Write("Госномер или его начало: ");
-            PrintCars(logic, logic.SearchCarsByLicensePlate(ReadString()));
+            PrintCars(crud, business.SearchCarsByLicensePlate(ReadString()));
         }
 
         /// <summary>
         /// Добавление автомобиля
         /// </summary>
-        private static void AddCar(Logic logic)
+        private static void AddCar(CrudLogic crud)
         {
             Console.WriteLine("ДОБАВЛЕНИЕ АВТОМОБИЛЯ\n");
-            ListBrands(logic);
+            ListBrands(crud);
 
             Console.Write("Госномер (формат А001АА777): ");
             string plate = ReadString().ToUpperInvariant();
 
-            if (!logic.IsValidLicensePlate(plate))
+            if (!crud.IsValidLicensePlate(plate))
             {
                 Console.WriteLine("Неверный формат госномера. Используйте кириллические буквы АВЕКМНОРСТУХ.");
                 Pause();
@@ -213,7 +215,7 @@ namespace ConsoleApp
             int brandId = ReadInt("ID бренда: ");
             Car car = ReadCarDetails(plate, brandId);
 
-            if (logic.AddCar(car))
+            if (crud.AddCar(car))
                 Console.WriteLine("Автомобиль добавлен.");
             else
                 Console.WriteLine("Не удалось добавить. Проверьте бренд, формат и уникальность госномера.");
@@ -224,11 +226,11 @@ namespace ConsoleApp
         /// <summary>
         /// Изменение автомобиля
         /// </summary>
-        private static void UpdateCar(Logic logic)
+        private static void UpdateCar(CrudLogic crud)
         {
             Console.Write("Госномер автомобиля: ");
             string plate = ReadString();
-            Car? car = logic.GetCarById(plate);
+            Car? car = crud.GetCarById(plate);
             if (car == null)
             {
                 Console.WriteLine("Автомобиль не найден.");
@@ -237,16 +239,16 @@ namespace ConsoleApp
             }
 
             Console.WriteLine("\nТекущие данные:");
-            PrintCar(logic, car);
+            PrintCar(crud, car);
             Console.WriteLine();
 
-            ListBrands(logic);
+            ListBrands(crud);
             int brandId = ReadInt("Новый ID бренда: ");
             Car updated = ReadCarDetails(car.LicensePlate, brandId);
             // Сохраняем фото, если было
             updated.Image = car.Image;
 
-            if (logic.UpdateCar(updated))
+            if (crud.UpdateCar(updated))
                 Console.WriteLine("Автомобиль изменён.");
             else
                 Console.WriteLine("Не удалось изменить автомобиль. Проверьте бренд.");
@@ -257,11 +259,11 @@ namespace ConsoleApp
         /// <summary>
         /// Удаление автомобиля
         /// </summary>
-        private static void DeleteCar(Logic logic)
+        private static void DeleteCar(CrudLogic crud)
         {
             Console.Write("Госномер автомобиля: ");
             string plate = ReadString();
-            Car? car = logic.GetCarById(plate);
+            Car? car = crud.GetCarById(plate);
             if (car == null)
             {
                 Console.WriteLine("Автомобиль не найден.");
@@ -269,7 +271,7 @@ namespace ConsoleApp
                 return;
             }
 
-            PrintCar(logic, car);
+            PrintCar(crud, car);
             Console.Write("\nУдалить? (y/n): ");
             if (!IsYes(Console.ReadLine()))
             {
@@ -278,7 +280,7 @@ namespace ConsoleApp
                 return;
             }
 
-            Console.WriteLine(logic.DeleteCar(plate) ? "Автомобиль удалён." : "Не удалось удалить автомобиль.");
+            Console.WriteLine(crud.DeleteCar(plate) ? "Автомобиль удалён." : "Не удалось удалить автомобиль.");
             Pause();
         }
 
@@ -312,17 +314,17 @@ namespace ConsoleApp
         /// <summary>
         /// Показывает все бренды
         /// </summary>
-        private static void ShowAllBrands(Logic logic)
+        private static void ShowAllBrands(CrudLogic crud)
         {
             Console.WriteLine("БРЕНДЫ\n");
-            ListBrands(logic);
+            ListBrands(crud);
             Pause();
         }
 
         /// <summary>
         /// Добавление бренда
         /// </summary>
-        private static void AddBrand(Logic logic)
+        private static void AddBrand(CrudLogic crud)
         {
             Console.WriteLine("ДОБАВЛЕНИЕ БРЕНДА\n");
             Console.Write("Название: ");
@@ -338,7 +340,7 @@ namespace ConsoleApp
             }
 
             Brand brand = new() { Name = name, Country = country };
-            if (logic.AddBrand(brand))
+            if (crud.AddBrand(brand))
                 Console.WriteLine($"Бренд добавлен. ID: {brand.ID}");
             else
                 Console.WriteLine("Не удалось добавить бренд (возможно, такое название уже есть).");
@@ -349,13 +351,13 @@ namespace ConsoleApp
         /// <summary>
         /// Изменение бренда
         /// </summary>
-        private static void UpdateBrand(Logic logic)
+        private static void UpdateBrand(CrudLogic crud)
         {
             Console.WriteLine("ИЗМЕНЕНИЕ БРЕНДА\n");
-            ListBrands(logic);
+            ListBrands(crud);
 
             int id = ReadInt("ID бренда: ");
-            Brand? existing = logic.GetBrandById(id);
+            Brand? existing = crud.GetBrandById(id);
             if (existing == null)
             {
                 Console.WriteLine("Бренд не найден.");
@@ -370,7 +372,7 @@ namespace ConsoleApp
             string country = ReadString();
 
             Brand brand = new() { ID = id, Name = name, Country = country };
-            if (logic.UpdateBrand(brand))
+            if (crud.UpdateBrand(brand))
                 Console.WriteLine("Бренд изменён.");
             else
                 Console.WriteLine("Не удалось изменить бренд (проверьте название).");
@@ -381,13 +383,13 @@ namespace ConsoleApp
         /// <summary>
         /// Удаление бренда
         /// </summary>
-        private static void DeleteBrand(Logic logic)
+        private static void DeleteBrand(CrudLogic crud)
         {
             Console.WriteLine("УДАЛЕНИЕ БРЕНДА\n");
-            ListBrands(logic);
+            ListBrands(crud);
 
             int id = ReadInt("ID бренда: ");
-            Brand? existing = logic.GetBrandById(id);
+            Brand? existing = crud.GetBrandById(id);
             if (existing == null)
             {
                 Console.WriteLine("Бренд не найден.");
@@ -403,7 +405,7 @@ namespace ConsoleApp
                 return;
             }
 
-            if (logic.DeleteBrand(id))
+            if (crud.DeleteBrand(id))
                 Console.WriteLine("Бренд удалён.");
             else
                 Console.WriteLine("Не удалось удалить: бренд используется автомобилями или не найден.");
@@ -414,22 +416,22 @@ namespace ConsoleApp
         /// <summary>
         /// Показывает автомобили выбранного бренда
         /// </summary>
-        private static void ShowCarsByBrand(Logic logic)
+        private static void ShowCarsByBrand(BusinessLogic.BusinessLogic business, CrudLogic crud)
         {
             Console.WriteLine("АВТОМОБИЛИ ПО БРЕНДУ\n");
-            ListBrands(logic);
+            ListBrands(crud);
             int id = ReadInt("ID бренда: ");
-            PrintCars(logic, logic.GetCarsByBrand(id));
+            PrintCars(crud, business.GetCarsByBrand(id));
         }
 
         /// <summary>
         /// Показывает автомобили с расходом не выше заданного
         /// </summary>
-        private static void ShowCarsByFuelConsumption(Logic logic)
+        private static void ShowCarsByFuelConsumption(BusinessLogic.BusinessLogic business, CrudLogic crud)
         {
             Console.WriteLine("АВТОМОБИЛИ ПО РАСХОДУ\n");
             float max = ReadFloat("Максимальный расход (л/100 км): ");
-            PrintCars(logic, logic.GetCarsByFuelConsuption(max));
+            PrintCars(crud, business.GetCarsByMaxFuelConsumption(max));
         }
 
         /// <summary>

@@ -16,10 +16,10 @@ namespace WinForms
             // IoC (Ninject): модуль из слоя BusinessLogic регистрирует IRepository 
             IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
 
-            // Автоматическое внедрение IRepository в конструктор Logic
-            Logic logic = ninjectKernel.Get<Logic>();
-
-            Application.Run(new MainForm(logic));
+            // Автоматическое внедрение IRepository в конструктор CrudLogic
+            CrudLogic crud = ninjectKernel.Get<CrudLogic>();
+            BusinessLogic.BusinessLogic business = ninjectKernel.Get<BusinessLogic.BusinessLogic>();
+            Application.Run(new MainForm(crud, business));
         }
     }
 }

@@ -5,7 +5,7 @@ namespace WinForms
 {
     public partial class CarForm : Form
     {
-        private readonly Logic _logic;
+        private readonly CrudLogic _logic;
         private readonly bool _isNew;
         private byte[]? _imageBytes;
 
@@ -24,7 +24,7 @@ namespace WinForms
         /// </summary>
         /// <param name="logic">Бизнес-логика</param>
         /// <param name="car">Автомобиль для редактирования или null при добавлении</param>
-        public CarForm(Logic logic, Car? car = null)
+        public CarForm(CrudLogic logic, Car? car = null)
         {
             InitializeComponent();
             _logic = logic;

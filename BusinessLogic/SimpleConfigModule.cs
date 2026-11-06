@@ -1,5 +1,6 @@
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
+using Ninject;
 using Ninject.Modules;
 
 namespace BusinessLogic
@@ -17,25 +18,26 @@ namespace BusinessLogic
         {
             // Параметры EF-контекста — один раз на приложение
             Bind<DbContextOptions<AppDbContext>>()
-                .ToMethod(_ =>
-                {
-                    string cs = ConnectionSettings.DBConnection();
-                    return new DbContextOptionsBuilder<AppDbContext>()
-                        .UseNpgsql(cs)
-                        .Options;
-                })
+                .ToMethod(_ => new DbContextOptionsBuilder<AppDbContext>()
+                    .UseNpgsql(ConnectionSettings.DBConnection())
+                    .Options)
                 .InSingletonScope();
 
-           
+
             // Можно заменить на typeof(DapperRepository<,>), если нужна реализация на Dapper
             Bind(typeof(IRepository<,>))
                 .To(typeof(EntityRepository<,>))
                 .InSingletonScope();
 
-            // Бизнес-логика: зависимости подставятся автоматически через конструктор
-            Bind<Logic>().ToSelf();
+            // IReadRepository отдаёт тот же singleton, что и IRepository
+            Bind(typeof(IReadRepository<,>)).ToMethod(ctx =>
+                ctx.Kernel.Get(typeof(IRepository<,>)
+                    .MakeGenericType(ctx.Request.Service.GetGenericArguments())));
 
             Bind<ILicensePlateValidator>().To<LicensePlateValidator>().InSingletonScope();
+
+            Bind<CrudLogic>().ToSelf();
+            Bind<BusinessLogic>().ToSelf();
         }
     }
 }

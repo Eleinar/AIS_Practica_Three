@@ -5,17 +5,20 @@ namespace WinForms
 {
     public partial class MainForm : Form
     {
-        private readonly Logic _logic;
+        private readonly CrudLogic _crud;
+        private readonly BusinessLogic.BusinessLogic _business;
         private float _lastCardScale = 1f;
 
         /// <summary>
         /// Конструктор главной формы с внедрением бизнес-логики (DIP / IoC)
         /// </summary>
-        /// <param name="logic">Экземпляр бизнес-логики, полученный из IoC-контейнера</param>
-        public MainForm(Logic logic)
+        /// <param name="crud">CRUD-логика, полученная из IoC-контейнера</param>
+        /// <param name="business">Бизнес-функции (выборки), полученные из IoC-контейнера</param>
+        public MainForm(CrudLogic crud, BusinessLogic.BusinessLogic business)
         {
             InitializeComponent();
-            _logic = logic ?? throw new ArgumentNullException(nameof(logic));
+            _crud = crud ?? throw new ArgumentNullException(nameof(crud));
+            _business = business ?? throw new ArgumentNullException(nameof(business));
             EnsureCarsTabLayout();
             brandsCardsPanel.WrapContents = false;
             brandsCardsPanel.FlowDirection = FlowDirection.TopDown;
@@ -183,7 +186,7 @@ namespace WinForms
         /// <summary>
         /// Обновляет список карточек автомобилей из базы данных
         /// </summary>
-        private void RefreshCars() => ShowCars(_logic.GetAllCars());
+        private void RefreshCars() => ShowCars(_crud.GetAllCars());
 
         /// <summary>
         /// Отображает переданный список автомобилей в виде карточек
@@ -239,7 +242,7 @@ namespace WinForms
             int photoH = (int)(140 * s);
             int photoW = cardW - pad * 2;
 
-            string brandName = _logic.GetBrandName(car.BrandID);
+            string brandName = _crud.GetBrandName(car.BrandID);
 
             var card = new Panel
             {
@@ -427,7 +430,7 @@ namespace WinForms
         /// <param name="licensePlate">Госномер автомобиля</param>
         private void OpenCarEditor(string licensePlate)
         {
-            Car? source = _logic.GetCarById(licensePlate);
+            Car? source = _crud.GetCarById(licensePlate);
             if (source == null)
             {
                 MessageBox.Show("Автомобиль не найден.");
@@ -435,16 +438,16 @@ namespace WinForms
                 return;
             }
 
-            using var form = new CarForm(_logic, CloneCar(source));
+            using var form = new CarForm(_crud, CloneCar(source));
             if (form.ShowDialog(this) != DialogResult.OK)
                 return;
 
             if (form.Deleted)
             {
-                if (!_logic.DeleteCar(licensePlate))
+                if (!_crud.DeleteCar(licensePlate))
                     MessageBox.Show("Не удалось удалить автомобиль.");
             }
-            else if (!_logic.UpdateCar(form.Car))
+            else if (!_crud.UpdateCar(form.Car))
             {
                 MessageBox.Show("Не удалось изменить автомобиль.");
             }
@@ -475,11 +478,11 @@ namespace WinForms
         /// </summary>
         private void addCarButton_Click(object? sender, EventArgs e)
         {
-            using var form = new CarForm(_logic);
+            using var form = new CarForm(_crud);
             if (form.ShowDialog(this) != DialogResult.OK)
                 return;
 
-            if (!_logic.AddCar(form.Car))
+            if (!_crud.AddCar(form.Car))
             {
                 MessageBox.Show("Не удалось добавить автомобиль. Проверьте бренд, формат и уникальность госномера.");
                 return;
@@ -499,7 +502,7 @@ namespace WinForms
         private void findByBrandButton_Click(object? sender, EventArgs e)
         {
             if (brandComboBox.SelectedItem is Brand brand)
-                ShowCars(_logic.GetCarsByBrand(brand.ID));
+                ShowCars(_business.GetCarsByBrand(brand.ID));
             else
                 MessageBox.Show("Сначала добавьте или выберите бренд.");
         }
@@ -508,7 +511,7 @@ namespace WinForms
         /// Обработчик поиска автомобилей по максимальному расходу топлива
         /// </summary>
         private void findByFuelButton_Click(object? sender, EventArgs e) =>
-            ShowCars(_logic.GetCarsByFuelConsuption((float)fuelConsumptionInput.Value));
+            ShowCars(_business.GetCarsByMaxFuelConsumption((float)fuelConsumptionInput.Value));
 
         /// <summary>
         /// Обработчик поиска автомобилей по госномеру (или его началу)
@@ -521,7 +524,7 @@ namespace WinForms
                 RefreshCars();
                 return;
             }
-            ShowCars(_logic.SearchCarsByLicensePlate(query));
+            ShowCars(_business.SearchCarsByLicensePlate(query));
         }
 
         /// <summary>
@@ -534,7 +537,7 @@ namespace WinForms
         /// </summary>
         private void RefreshBrands()
         {
-            var brands = _logic.GetAllBrands();
+            var brands = _crud.GetAllBrands();
 
             brandComboBox.DataSource = null;
             brandComboBox.DataSource = new List<Brand>(brands);
@@ -662,7 +665,7 @@ namespace WinForms
         /// <param name="brandId">Идентификатор бренда</param>
         private void OpenBrandEditor(int brandId)
         {
-            Brand? source = _logic.GetBrandById(brandId);
+            Brand? source = _crud.GetBrandById(brandId);
             if (source == null)
             {
                 MessageBox.Show("Бренд не найден.");
@@ -681,10 +684,10 @@ namespace WinForms
 
             if (form.Deleted)
             {
-                if (!_logic.DeleteBrand(brandId))
+                if (!_crud.DeleteBrand(brandId))
                     MessageBox.Show("Бренд не найден или используется автомобилями.");
             }
-            else if (!_logic.UpdateBrand(form.Brand))
+            else if (!_crud.UpdateBrand(form.Brand))
             {
                 MessageBox.Show("Не удалось изменить бренд. Проверьте название.");
                 return;
@@ -701,7 +704,7 @@ namespace WinForms
         {
             using var form = new BrandForm();
             if (form.ShowDialog(this) != DialogResult.OK) return;
-            if (!_logic.AddBrand(form.Brand))
+            if (!_crud.AddBrand(form.Brand))
             {
                 MessageBox.Show("Бренд с таким названием уже существует.");
                 return;
