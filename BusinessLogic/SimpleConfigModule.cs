@@ -16,7 +16,7 @@ namespace BusinessLogic
         /// </summary>
         public override void Load()
         {
-            // Параметры EF-контекста — один раз на приложение
+            // Параметры EF-контекста 
             Bind<DbContextOptions<AppDbContext>>()
                 .ToMethod(_ => new DbContextOptionsBuilder<AppDbContext>()
                     .UseNpgsql(ConnectionSettings.DBConnection())
@@ -36,8 +36,11 @@ namespace BusinessLogic
 
             Bind<ILicensePlateValidator>().To<LicensePlateValidator>().InSingletonScope();
 
-            Bind<CrudLogic>().ToSelf();
-            Bind<BusinessLogic>().ToSelf();
+            // Logic: слой View получает абстракции, реализации подставляет контейнер
+            Bind<ICrudLogic>().To<CrudLogic>();
+            Bind<IBusinessLogic>().To<BusinessLogic>();
+
+            Bind<ILogic>().To<Logic>();
         }
     }
 }

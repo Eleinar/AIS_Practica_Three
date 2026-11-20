@@ -100,10 +100,7 @@ namespace DataAccessLayer
             return parameters;
         }
 
-        /// <summary>
-        /// Добавляет сущность в базу данных
-        /// </summary>
-        /// <param name="item">Добавляемая сущность</param>
+        ///<inheritdoc/>
         public virtual void Add(T item)
         {
             using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
@@ -118,43 +115,28 @@ namespace DataAccessLayer
             }
         }
 
-        /// <summary>
-        /// Обновляет сущность в базе данных
-        /// </summary>
-        /// <param name="item">Сущность с новыми данными</param>
-        /// <returns>true, если затронута хотя бы одна строка</returns>
+        ///<inheritdoc/>
         public virtual bool Update(T item)
         {
             using NpgsqlConnection connection = new(_connectionString);
             return connection.Execute(_update, item) > 0;
         }
 
-        /// <summary>
-        /// Удаляет сущность по идентификатору
-        /// </summary>
-        /// <param name="id">Идентификатор сущности</param>
-        /// <returns>true, если затронута хотя бы одна строка</returns>
+        ///<inheritdoc/>
         public virtual bool Delete(Tkey id)
         {
             using NpgsqlConnection connection = new(_connectionString);
             return connection.Execute(_delete, IdParameter(id)) > 0;
         }
 
-        /// <summary>
-        /// Возвращает сущность по идентификатору
-        /// </summary>
-        /// <param name="id">Идентификатор сущности</param>
-        /// <returns>Сущность или null</returns>
+        ///<inheritdoc/>
         public virtual T? ReadById(Tkey id)
         {
             using NpgsqlConnection connection = new(_connectionString);
             return connection.QuerySingleOrDefault<T>(_selectById, IdParameter(id));
         }
 
-        /// <summary>
-        /// Возвращает все сущности
-        /// </summary>
-        /// <returns>Список всех сущностей</returns>
+        ///<inheritdoc/>
         public virtual List<T> ReadAll()
         {
             using NpgsqlConnection connection = new(_connectionString);

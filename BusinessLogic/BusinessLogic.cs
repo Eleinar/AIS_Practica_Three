@@ -7,7 +7,7 @@ namespace BusinessLogic
     /// <summary>
     /// Бизнес-функции автопарка: выборки и поиск (только чтение)
     /// </summary>
-    public class BusinessLogic
+    public class BusinessLogic : IBusinessLogic
     {
         private readonly IReadRepository<Car, string> _cars;
 
@@ -16,21 +16,15 @@ namespace BusinessLogic
             _cars = cars ?? throw new ArgumentNullException(nameof(cars));
         }
 
-        /// <summary>
-        /// Автомобили выбранного бренда
-        /// </summary>
+        /// <inheritdoc/>
         public List<Car> GetCarsByBrand(int brandId) =>
             _cars.ReadAll().Where(c => c.BrandID == brandId).ToList();
 
-        /// <summary>
-        /// Автомобили с расходом не выше заданного
-        /// </summary>
+        /// <inheritdoc/>
         public List<Car> GetCarsByMaxFuelConsumption(float maxFuelConsumption) =>
             _cars.ReadAll().Where(c => c.FuelConsumption <= maxFuelConsumption).ToList();
 
-        /// <summary>
-        /// Поиск по госномеру или его началу
-        /// </summary>
+        /// <inheritdoc/>
         public List<Car> SearchCarsByLicensePlate(string? query)
         {
             if (string.IsNullOrWhiteSpace(query))

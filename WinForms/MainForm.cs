@@ -5,20 +5,20 @@ namespace WinForms
 {
     public partial class MainForm : Form
     {
-        private readonly CrudLogic _crud;
-        private readonly BusinessLogic.BusinessLogic _business;
+        private readonly ICrudLogic _crud;
+        private readonly IBusinessLogic _business;
         private float _lastCardScale = 1f;
 
         /// <summary>
         /// Конструктор главной формы с внедрением бизнес-логики (DIP / IoC)
         /// </summary>
-        /// <param name="crud">CRUD-логика, полученная из IoC-контейнера</param>
-        /// <param name="business">Бизнес-функции (выборки), полученные из IoC-контейнера</param>
-        public MainForm(CrudLogic crud, BusinessLogic.BusinessLogic business)
+        /// <param name="logic">Бизнес-логика (CRUD и выборки), полученная из IoC-контейнера</param>
+        public MainForm(ILogic logic)
         {
             InitializeComponent();
-            _crud = crud ?? throw new ArgumentNullException(nameof(crud));
-            _business = business ?? throw new ArgumentNullException(nameof(business));
+            ArgumentNullException.ThrowIfNull(logic);
+            _crud = logic;
+            _business = logic;
             EnsureCarsTabLayout();
             brandsCardsPanel.WrapContents = false;
             brandsCardsPanel.FlowDirection = FlowDirection.TopDown;

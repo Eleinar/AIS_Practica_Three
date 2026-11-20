@@ -6,7 +6,7 @@ namespace BusinessLogic
     /// <summary>
     /// CRUD-операции над автомобилями и брендами (с проверками целостности)
     /// </summary>
-    public class CrudLogic
+    public class CrudLogic : ICrudLogic
     {
         private readonly IRepository<Car, string> _cars;
         private readonly IRepository<Brand, int> _brands;
@@ -22,17 +22,18 @@ namespace BusinessLogic
 
         private static string NormalizePlate(string plate) => plate.Trim().ToUpperInvariant();
 
-        /// <summary>
-        /// Проверяет формат госномера
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsValidLicensePlate(string? plate) => _plateValidator.IsValid(plate);
 
         #region Авто
 
+        /// <inheritdoc/>
         public List<Car> GetAllCars() => _cars.ReadAll();
 
+        /// <inheritdoc/>
         public Car? GetCarById(string plate) => _cars.ReadById(NormalizePlate(plate));
 
+        /// <inheritdoc/>
         public bool AddCar(Car car)
         {
             if (car == null || !IsValidLicensePlate(car.LicensePlate) ||
@@ -44,6 +45,7 @@ namespace BusinessLogic
             return true;
         }
 
+        /// <inheritdoc/>
         public bool UpdateCar(Car car)
         {
             if (car == null || GetBrandById(car.BrandID) == null)
@@ -52,18 +54,23 @@ namespace BusinessLogic
             return _cars.Update(car);
         }
 
+        /// <inheritdoc/>
         public bool DeleteCar(string licensePlate) => _cars.Delete(NormalizePlate(licensePlate));
 
         #endregion
 
         #region Бренды
 
+        /// <inheritdoc/>
         public List<Brand> GetAllBrands() => _brands.ReadAll();
 
+        /// <inheritdoc/>
         public Brand? GetBrandById(int id) => _brands.ReadById(id);
 
+        /// <inheritdoc/>
         public string GetBrandName(int brandId) => GetBrandById(brandId)?.Name ?? "Неизвестный бренд";
 
+        /// <inheritdoc/>
         public bool AddBrand(Brand brand)
         {
             bool exists = _brands.ReadAll().Any(b =>
@@ -75,6 +82,7 @@ namespace BusinessLogic
             return true;
         }
 
+        /// <inheritdoc/>
         public bool UpdateBrand(Brand brand)
         {
             if (brand == null)
@@ -93,6 +101,7 @@ namespace BusinessLogic
             return _brands.Update(brand);
         }
 
+        /// <inheritdoc/>
         public bool DeleteBrand(int brandId)
         {
             if (_cars.ReadAll().Any(c => c.BrandID == brandId))

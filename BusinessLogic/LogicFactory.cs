@@ -14,8 +14,8 @@ namespace BusinessLogic
         /// <summary>
         /// Возвращает Logic с внедрёнными репозиториями (Singleton) через Ninject
         /// </summary>
-        /// <returns>Экземпляр бизнес-логики</returns>
-        public static Logic Create() => Kernel.Value.Get<Logic>();
+        /// <returns>Бизнес-логика в виде абстракции <see cref="IBusinessLogic"/></returns>
+        public static IBusinessLogic Create() => Kernel.Value.Get<IBusinessLogic>();
 
         /// <summary>
         /// Создаёт новый kernel с модулем конфигурации (для слоя View)

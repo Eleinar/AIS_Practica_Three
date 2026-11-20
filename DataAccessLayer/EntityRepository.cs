@@ -12,28 +12,19 @@ namespace DataAccessLayer
     {
         private readonly DbContextOptions<AppDbContext> _options;
 
-        /// <summary>
-        /// Создаёт репозиторий с заданными параметрами контекста
-        /// </summary>
-        /// <param name="options">Параметры DbContext</param>
+        ///<inheritdoc/>
         public EntityRepository(DbContextOptions<AppDbContext> options)
         {
             _options = options;
         }
 
-        /// <summary>
-        /// Создаёт новый экземпляр контекста базы данных
-        /// </summary>
-        /// <returns>Контекст EF</returns>
+        ///<inheritdoc/>
         private AppDbContext CreateContext()
         {
             return new AppDbContext(_options);
         }
 
-        /// <summary>
-        /// Добавляет сущность в базу данных
-        /// </summary>
-        /// <param name="entity">Добавляемая сущность</param>
+        ///<inheritdoc/>
         public virtual void Add(T entity)
         {
             using AppDbContext context = CreateContext();
@@ -41,11 +32,7 @@ namespace DataAccessLayer
             context.SaveChanges();
         }
 
-        /// <summary>
-        /// Обновляет сущность в базе данных
-        /// </summary>
-        /// <param name="entity">Сущность с новыми данными</param>
-        /// <returns>true, если сохранение прошло успешно</returns>
+        ///<inheritdoc/>
         public virtual bool Update(T entity)
         {
             using AppDbContext context = CreateContext();
@@ -62,11 +49,7 @@ namespace DataAccessLayer
             }
         }
 
-        /// <summary>
-        /// Удаляет сущность по идентификатору
-        /// </summary>
-        /// <param name="id">Идентификатор сущности</param>
-        /// <returns>true, если сущность найдена и удалена</returns>
+        ///<inheritdoc/>
         public virtual bool Delete(TKey id)
         {
             using AppDbContext context = CreateContext();
@@ -82,21 +65,14 @@ namespace DataAccessLayer
             return true;
         }
 
-        /// <summary>
-        /// Возвращает сущность по идентификатору
-        /// </summary>
-        /// <param name="id">Идентификатор сущности</param>
-        /// <returns>Сущность или null</returns>
+        ///<inheritdoc/>
         public virtual T? ReadById(TKey id)
         {
             using AppDbContext context = CreateContext();
             return context.Set<T>().Find(new object?[] { id });
         }
 
-        /// <summary>
-        /// Возвращает все сущности без отслеживания изменений
-        /// </summary>
-        /// <returns>Список всех сущностей</returns>
+        ///<inheritdoc/>
         public virtual List<T> ReadAll()
         {
             using AppDbContext context = CreateContext();
