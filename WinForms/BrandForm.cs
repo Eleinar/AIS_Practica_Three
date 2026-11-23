@@ -1,4 +1,4 @@
-using Model;
+using Shared;
 
 namespace WinForms
 {
@@ -9,7 +9,7 @@ namespace WinForms
         /// <summary>
         /// Результат заполнения формы — объект бренда
         /// </summary>
-        public Brand Brand { get; private set; }
+        public BrandDto Brand { get; private set; }
 
         /// <summary>
         /// Признак того, что пользователь подтвердил удаление бренда
@@ -20,11 +20,11 @@ namespace WinForms
         /// Конструктор формы для работы с брендами
         /// </summary>
         /// <param name="brand">Бренд для редактирования или null при добавлении</param>
-        public BrandForm(Brand? brand = null)
+        public BrandForm(BrandDto? brand = null)
         {
             InitializeComponent();
             _isNew = brand == null;
-            Brand = brand ?? new Brand();
+            Brand = brand ?? new BrandDto();
             Deleted = false;
 
             Text = _isNew ? "Добавление бренда" : "Редактирование бренда";

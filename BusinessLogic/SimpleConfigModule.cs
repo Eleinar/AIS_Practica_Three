@@ -36,11 +36,13 @@ namespace BusinessLogic
 
             Bind<ILicensePlateValidator>().To<LicensePlateValidator>().InSingletonScope();
 
-            // Logic: слой View получает абстракции, реализации подставляет контейнер
+            // Logic: CRUD + бизнес-функции
             Bind<ICrudLogic>().To<CrudLogic>();
             Bind<IBusinessLogic>().To<BusinessLogic>();
-
             Bind<ILogic>().To<Logic>();
+
+            // Model для Presenter: единственная точка входа в слой Model+BL
+            Bind<IModel>().To<FleetModel>().InSingletonScope();
         }
     }
 }

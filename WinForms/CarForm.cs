@@ -1,18 +1,16 @@
-using Model;
-using BusinessLogic;
+using Shared;
 
 namespace WinForms
 {
     public partial class CarForm : Form
     {
-        private readonly ICrudLogic _logic;
         private readonly bool _isNew;
         private byte[]? _imageBytes;
 
         /// <summary>
         /// Результат заполнения формы — объект автомобиля
         /// </summary>
-        public Car Car { get; private set; }
+        public CarDto Car { get; private set; }
 
         /// <summary>
         /// Признак того, что пользователь подтвердил удаление автомобиля
@@ -22,29 +20,28 @@ namespace WinForms
         /// <summary>
         /// Конструктор формы для работы с автомобилями
         /// </summary>
-        /// <param name="logic">Бизнес-логика</param>
+        /// <param name="brands">Список брендов для выпадающего списка</param>
         /// <param name="car">Автомобиль для редактирования или null при добавлении</param>
-        public CarForm(ICrudLogic logic, Car? car = null)
+        public CarForm(IReadOnlyList<BrandDto> brands, CarDto? car = null)
         {
             InitializeComponent();
-            _logic = logic;
             _isNew = car == null;
-            Car = car ?? new Car();
+            Car = car ?? new CarDto();
             Deleted = false;
 
             Text = _isNew ? "Добавление автомобиля" : "Редактирование автомобиля";
             saveButton.Text = _isNew ? "Добавить" : "Сохранить";
             deleteButton.Visible = !_isNew;
 
-            brandBox.DataSource = logic.GetAllBrands();
-            brandBox.DisplayMember = nameof(Brand.Name);
-            brandBox.ValueMember = nameof(Brand.ID);
+            brandBox.DataSource = brands.ToList();
+            brandBox.DisplayMember = nameof(BrandDto.Name);
+            brandBox.ValueMember = nameof(BrandDto.Id);
 
             if (!_isNew)
             {
                 plateBox.Text = car!.LicensePlate;
                 plateBox.ReadOnly = true;
-                brandBox.SelectedValue = car.BrandID;
+                brandBox.SelectedValue = car.BrandId;
                 modelBox.Text = car.ModelName;
                 yearBox.Value = Math.Clamp(car.ProductionYear, (int)yearBox.Minimum, (int)yearBox.Maximum);
                 horsePowerBox.Value = Math.Clamp((decimal)car.HorsePower, horsePowerBox.Minimum, horsePowerBox.Maximum);
@@ -126,7 +123,7 @@ namespace WinForms
         /// </summary>
         private void saveButton_Click(object? sender, EventArgs e)
         {
-            if (brandBox.SelectedItem is not Brand brand)
+            if (brandBox.SelectedItem is not BrandDto brand)
             {
                 MessageBox.Show("Сначала добавьте бренд.");
                 return;
@@ -138,15 +135,16 @@ namespace WinForms
                 return;
             }
 
+            // Формат госномера проверяет слой Model; о неудаче View узнает от Presenter
             string plate = plateBox.Text.Trim().ToUpperInvariant();
-            if (!_logic.IsValidLicensePlate(plate))
+            if (plate.Length == 0)
             {
-                MessageBox.Show("Номер должен иметь формат А001АА777 (кириллические буквы АВЕКМНОРСТУХ).");
+                MessageBox.Show("Введите госномер.");
                 return;
             }
 
             Car.LicensePlate = plate;
-            Car.BrandID = brand.ID;
+            Car.BrandId = brand.Id;
             Car.ModelName = modelBox.Text.Trim();
             Car.ProductionYear = (int)yearBox.Value;
             Car.HorsePower = (float)horsePowerBox.Value;

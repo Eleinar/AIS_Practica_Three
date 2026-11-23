@@ -1,24 +1,39 @@
-using Model;
-using BusinessLogic;
+using Shared;
 
 namespace WinForms
 {
-    public partial class MainForm : Form
+    /// <summary>
+    /// Главная форма (View в MVP): только отрисовка и генерация событий, без обращения к Model
+    /// </summary>
+    public partial class MainForm : Form, IMainView
     {
-        private readonly ICrudLogic _crud;
-        private readonly IBusinessLogic _business;
         private float _lastCardScale = 1f;
+        private List<CarDto> _cars = new();
+        private List<BrandDto> _brands = new();
+
+        #region События IMainView
+
+        public event EventHandler? ViewLoaded;
+        public event EventHandler? ShowAllCarsRequested;
+        public event EventHandler? RefreshBrandsRequested;
+        public event EventHandler<int>? FindByBrandRequested;
+        public event EventHandler<float>? FindByFuelRequested;
+        public event EventHandler<string>? FindByPlateRequested;
+        public event EventHandler<CarDto>? AddCarRequested;
+        public event EventHandler<CarDto>? UpdateCarRequested;
+        public event EventHandler<string>? DeleteCarRequested;
+        public event EventHandler<BrandDto>? AddBrandRequested;
+        public event EventHandler<BrandDto>? UpdateBrandRequested;
+        public event EventHandler<int>? DeleteBrandRequested;
+
+        #endregion
 
         /// <summary>
-        /// Конструктор главной формы с внедрением бизнес-логики (DIP / IoC)
+        /// Конструктор главной формы. Зависимостей нет: связь с Model обеспечивает Presenter
         /// </summary>
-        /// <param name="logic">Бизнес-логика (CRUD и выборки), полученная из IoC-контейнера</param>
-        public MainForm(ILogic logic)
+        public MainForm()
         {
             InitializeComponent();
-            ArgumentNullException.ThrowIfNull(logic);
-            _crud = logic;
-            _business = logic;
             EnsureCarsTabLayout();
             brandsCardsPanel.WrapContents = false;
             brandsCardsPanel.FlowDirection = FlowDirection.TopDown;
@@ -37,10 +52,17 @@ namespace WinForms
                 LayoutSearchFilters();
                 ResizeBrandCards();
                 ResizeCarCards();
+                ViewLoaded?.Invoke(this, EventArgs.Empty);
             };
-            RefreshBrands();
-            RefreshCars();
         }
+
+        /// <inheritdoc/>
+        public void ShowError(string message) =>
+            MessageBox.Show(this, message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+        /// <inheritdoc/>
+        public void ShowMessage(string message) =>
+            MessageBox.Show(this, message, "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         /// <summary>
         /// Гарантирует порядок элементов на вкладке автомобилей: поиск → кнопки → карточки
@@ -183,22 +205,15 @@ namespace WinForms
             showAllCarsButton.SetBounds(x, btnY, showAllW, btnH);
         }
 
-        /// <summary>
-        /// Обновляет список карточек автомобилей из базы данных
-        /// </summary>
-        private void RefreshCars() => ShowCars(_crud.GetAllCars());
-
-        /// <summary>
-        /// Отображает переданный список автомобилей в виде карточек
-        /// </summary>
-        /// <param name="cars">Список автомобилей для отображения</param>
-        private void ShowCars(List<Car> cars)
+        /// <inheritdoc/>
+        public void ShowCars(IReadOnlyList<CarDto> cars)
         {
+            _cars = cars.ToList();
             carsCardsPanel.SuspendLayout();
             carsCardsPanel.Controls.Clear();
             _lastCardScale = CardScale();
 
-            foreach (Car car in cars)
+            foreach (CarDto car in cars)
                 carsCardsPanel.Controls.Add(CreateCarCard(car));
 
             if (cars.Count == 0)
@@ -233,7 +248,7 @@ namespace WinForms
         /// </summary>
         /// <param name="car">Автомобиль</param>
         /// <returns>Элемент управления-карточка</returns>
-        private Control CreateCarCard(Car car)
+        private Control CreateCarCard(CarDto car)
         {
             float s = CardScale();
             int cardW = (int)(200 * s);
@@ -242,7 +257,7 @@ namespace WinForms
             int photoH = (int)(140 * s);
             int photoW = cardW - pad * 2;
 
-            string brandName = _crud.GetBrandName(car.BrandID);
+            string brandName = car.BrandName;
 
             var card = new Panel
             {
@@ -430,40 +445,32 @@ namespace WinForms
         /// <param name="licensePlate">Госномер автомобиля</param>
         private void OpenCarEditor(string licensePlate)
         {
-            Car? source = _crud.GetCarById(licensePlate);
+            CarDto? source = _cars.FirstOrDefault(c => c.LicensePlate == licensePlate);
             if (source == null)
             {
-                MessageBox.Show("Автомобиль не найден.");
-                RefreshCars();
+                ShowError("Автомобиль не найден.");
+                ShowAllCarsRequested?.Invoke(this, EventArgs.Empty);
                 return;
             }
 
-            using var form = new CarForm(_crud, CloneCar(source));
+            using var form = new CarForm(_brands, CloneCar(source));
             if (form.ShowDialog(this) != DialogResult.OK)
                 return;
 
             if (form.Deleted)
-            {
-                if (!_crud.DeleteCar(licensePlate))
-                    MessageBox.Show("Не удалось удалить автомобиль.");
-            }
-            else if (!_crud.UpdateCar(form.Car))
-            {
-                MessageBox.Show("Не удалось изменить автомобиль.");
-            }
-
-            RefreshCars();
+                DeleteCarRequested?.Invoke(this, licensePlate);
+            else
+                UpdateCarRequested?.Invoke(this, form.Car);
         }
 
         /// <summary>
-        /// Создаёт копию объекта автомобиля для редактирования
+        /// Создаёт копию DTO автомобиля для редактирования
         /// </summary>
-        /// <param name="source">Исходный автомобиль</param>
-        /// <returns>Копия автомобиля</returns>
-        private static Car CloneCar(Car source) => new()
+        private static CarDto CloneCar(CarDto source) => new()
         {
             LicensePlate = source.LicensePlate,
-            BrandID = source.BrandID,
+            BrandId = source.BrandId,
+            BrandName = source.BrandName,
             ModelName = source.ModelName,
             ProductionYear = source.ProductionYear,
             HorsePower = source.HorsePower,
@@ -478,40 +485,35 @@ namespace WinForms
         /// </summary>
         private void addCarButton_Click(object? sender, EventArgs e)
         {
-            using var form = new CarForm(_crud);
+            using var form = new CarForm(_brands);
             if (form.ShowDialog(this) != DialogResult.OK)
                 return;
 
-            if (!_crud.AddCar(form.Car))
-            {
-                MessageBox.Show("Не удалось добавить автомобиль. Проверьте бренд, формат и уникальность госномера.");
-                return;
-            }
-
-            RefreshCars();
+            AddCarRequested?.Invoke(this, form.Car);
         }
 
         /// <summary>
         /// Обработчик обновления списка автомобилей
         /// </summary>
-        private void refreshCarsButton_Click(object? sender, EventArgs e) => RefreshCars();
+        private void refreshCarsButton_Click(object? sender, EventArgs e) =>
+            ShowAllCarsRequested?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
         /// Обработчик поиска автомобилей по выбранному бренду
         /// </summary>
         private void findByBrandButton_Click(object? sender, EventArgs e)
         {
-            if (brandComboBox.SelectedItem is Brand brand)
-                ShowCars(_business.GetCarsByBrand(brand.ID));
+            if (brandComboBox.SelectedItem is BrandDto brand)
+                FindByBrandRequested?.Invoke(this, brand.Id);
             else
-                MessageBox.Show("Сначала добавьте или выберите бренд.");
+                ShowMessage("Сначала добавьте или выберите бренд.");
         }
 
         /// <summary>
         /// Обработчик поиска автомобилей по максимальному расходу топлива
         /// </summary>
         private void findByFuelButton_Click(object? sender, EventArgs e) =>
-            ShowCars(_business.GetCarsByMaxFuelConsumption((float)fuelConsumptionInput.Value));
+            FindByFuelRequested?.Invoke(this, (float)fuelConsumptionInput.Value);
 
         /// <summary>
         /// Обработчик поиска автомобилей по госномеру (или его началу)
@@ -520,34 +522,31 @@ namespace WinForms
         {
             string query = plateSearchBox.Text.Trim();
             if (query.Length == 0)
-            {
-                RefreshCars();
-                return;
-            }
-            ShowCars(_business.SearchCarsByLicensePlate(query));
+                ShowAllCarsRequested?.Invoke(this, EventArgs.Empty);
+            else
+                FindByPlateRequested?.Invoke(this, query);
         }
 
         /// <summary>
         /// Обработчик сброса фильтров и показа всех автомобилей
         /// </summary>
-        private void showAllCarsButton_Click(object? sender, EventArgs e) => RefreshCars();
+        private void showAllCarsButton_Click(object? sender, EventArgs e) =>
+            ShowAllCarsRequested?.Invoke(this, EventArgs.Empty);
 
-        /// <summary>
-        /// Обновляет список карточек брендов и комбобокс фильтра
-        /// </summary>
-        private void RefreshBrands()
+        /// <inheritdoc/>
+        public void ShowBrands(IReadOnlyList<BrandDto> brands)
         {
-            var brands = _crud.GetAllBrands();
+            _brands = brands.ToList();
 
             brandComboBox.DataSource = null;
-            brandComboBox.DataSource = new List<Brand>(brands);
-            brandComboBox.DisplayMember = nameof(Brand.Name);
-            brandComboBox.ValueMember = nameof(Brand.ID);
+            brandComboBox.DataSource = new List<BrandDto>(brands);
+            brandComboBox.DisplayMember = nameof(BrandDto.Name);
+            brandComboBox.ValueMember = nameof(BrandDto.Id);
 
             brandsCardsPanel.SuspendLayout();
             brandsCardsPanel.Controls.Clear();
 
-            foreach (Brand brand in brands)
+            foreach (BrandDto brand in brands)
                 brandsCardsPanel.Controls.Add(CreateBrandCard(brand));
 
             if (brands.Count == 0)
@@ -581,7 +580,7 @@ namespace WinForms
         /// </summary>
         /// <param name="brand">Бренд</param>
         /// <returns>Элемент управления-карточка</returns>
-        private Control CreateBrandCard(Brand brand)
+        private Control CreateBrandCard(BrandDto brand)
         {
             int width = BrandCardWidth();
 
@@ -592,7 +591,7 @@ namespace WinForms
                 Margin = new Padding(8, 6, 8, 6),
                 BackColor = Color.White,
                 Cursor = Cursors.Hand,
-                Tag = brand.ID
+                Tag = brand.Id
             };
             card.Paint += (_, e) =>
             {
@@ -624,7 +623,7 @@ namespace WinForms
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
 
-            void openEditor(object? s, EventArgs e) => OpenBrandEditor(brand.ID);
+            void openEditor(object? s, EventArgs e) => OpenBrandEditor(brand.Id);
             card.Click += openEditor;
             nameLabel.Click += openEditor;
             countryLabel.Click += openEditor;
@@ -665,17 +664,17 @@ namespace WinForms
         /// <param name="brandId">Идентификатор бренда</param>
         private void OpenBrandEditor(int brandId)
         {
-            Brand? source = _crud.GetBrandById(brandId);
+            BrandDto? source = _brands.FirstOrDefault(b => b.Id == brandId);
             if (source == null)
             {
-                MessageBox.Show("Бренд не найден.");
-                RefreshBrands();
+                ShowError("Бренд не найден.");
+                RefreshBrandsRequested?.Invoke(this, EventArgs.Empty);
                 return;
             }
 
-            using var form = new BrandForm(new Brand
+            using var form = new BrandForm(new BrandDto
             {
-                ID = source.ID,
+                Id = source.Id,
                 Name = source.Name,
                 Country = source.Country
             });
@@ -683,18 +682,9 @@ namespace WinForms
                 return;
 
             if (form.Deleted)
-            {
-                if (!_crud.DeleteBrand(brandId))
-                    MessageBox.Show("Бренд не найден или используется автомобилями.");
-            }
-            else if (!_crud.UpdateBrand(form.Brand))
-            {
-                MessageBox.Show("Не удалось изменить бренд. Проверьте название.");
-                return;
-            }
-
-            RefreshBrands();
-            RefreshCars();
+                DeleteBrandRequested?.Invoke(this, brandId);
+            else
+                UpdateBrandRequested?.Invoke(this, form.Brand);
         }
 
         /// <summary>
@@ -703,19 +693,16 @@ namespace WinForms
         private void addBrandButton_Click(object? sender, EventArgs e)
         {
             using var form = new BrandForm();
-            if (form.ShowDialog(this) != DialogResult.OK) return;
-            if (!_crud.AddBrand(form.Brand))
-            {
-                MessageBox.Show("Бренд с таким названием уже существует.");
+            if (form.ShowDialog(this) != DialogResult.OK)
                 return;
-            }
-            RefreshBrands();
-            RefreshCars();
+
+            AddBrandRequested?.Invoke(this, form.Brand);
         }
 
         /// <summary>
         /// Обработчик обновления списка брендов
         /// </summary>
-        private void refreshBrandsButton_Click(object? sender, EventArgs e) => RefreshBrands();
+        private void refreshBrandsButton_Click(object? sender, EventArgs e) =>
+            RefreshBrandsRequested?.Invoke(this, EventArgs.Empty);
     }
 }

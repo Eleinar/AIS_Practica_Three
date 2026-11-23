@@ -1,25 +1,21 @@
-using BusinessLogic;
-using Ninject;
+using Presenter;
 
 namespace WinForms
 {
     internal static class Program
     {
         /// <summary>
-        /// Точка входа: создание IoC-контейнера и получение Logic через абстракции (DIP)
+        /// Точка входа: создаёт View и отдаёт его точке сборки, которая подключает Presenter и Model
         /// </summary>
         [STAThread]
         static void Main()
         {
             ApplicationConfiguration.Initialize();
 
-            // IoC (Ninject): модуль из слоя BusinessLogic сопоставляет интерфейсы с реализациями
-            IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
+            var view = new MainForm();
+            AppBootstrapper.Bind(view);
 
-            // Program зависит только от абстракции ILogic;
-            // Logic, CrudLogic, BusinessLogic и репозитории создаёт контейнер
-            ILogic logic = ninjectKernel.Get<ILogic>();
-            Application.Run(new MainForm(logic));
+            Application.Run(view);
         }
     }
 }

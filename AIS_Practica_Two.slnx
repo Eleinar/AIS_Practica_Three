@@ -3,5 +3,7 @@
   <Project Path="Console/Console.csproj" />
   <Project Path="DataAccessLayer/DataAccessLayer.csproj" Id="6b987c0c-9aca-44ab-8394-d9ceec3c674f" />
   <Project Path="Model/Model.csproj" />
+  <Project Path="Presenter/Presenter.csproj" Id="a5446448-6098-4c2a-8a7b-658aab9d3072" />
+  <Project Path="Shared/Shared.csproj" Id="df6464d4-9d3a-488f-b367-ac18a041f1da" />
   <Project Path="WinForms/WinForms.csproj" />
 </Solution>

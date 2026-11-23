@@ -9,21 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ninject" Version="3.3.6" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Model\Model.csproj" />
-    <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="BrandForm.cs">
-      <CustomToolNamespace>Winforms</CustomToolNamespace>
-    </Compile>
-    <Compile Update="MainForm.cs">
-      <CustomToolNamespace>WinForms</CustomToolNamespace>
-    </Compile>
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\Presenter\Presenter.csproj" />
   </ItemGroup>
 
 </Project>
