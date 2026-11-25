@@ -8,7 +8,7 @@
         /// <returns>Строка из переменной окружения CAR_CONNECTION или значение по умолчанию</returns>
         public static string DBConnection()
         {
-            return Environment.GetEnvironmentVariable("CAR_CONNECTION") ?? "Host=10.29.66.106;Port=5432;Database=car_base;Username=trash;Password=123";
+            return Environment.GetEnvironmentVariable("CAR_CONNECTION") ?? "Host=pgubuntu;Port=5432;Database=car_base;Username=trash;Password=123";
         }
     }
 }

@@ -1,16 +1,36 @@
+using Presenter;
+
 namespace WinForms
 {
     internal static class Program
     {
         /// <summary>
-        /// View не собирает приложение сама: точка сборки находится в проекте Presenter.
-        /// Эта заглушка нужна только потому, что проект с формами остаётся WinExe (требование дизайнера форм).
+        /// Точка входа WinForms-приложения. Форма создаётся здесь, а связывание View с Model
+        /// выполняет точка сборки из Presenter (<see cref="AppComposer"/>)
         /// </summary>
         [STAThread]
         static void Main()
         {
-            MessageBox.Show("Запускайте проект Presenter: он собирает приложение (View + Presenter + Model).",
-                "Автопарк");
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            MainForm view = new();
+            IDisposable presenter;
+            try
+            {
+                presenter = AppComposer.Compose(view);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Не удалось запустить приложение.\n\n" + (ex.InnerException?.Message ?? ex.Message),
+                    "Автопарк", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            using (presenter)
+            {
+                Application.Run(view);
+            }
         }
     }
 }
