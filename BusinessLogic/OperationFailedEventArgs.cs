@@ -5,7 +5,6 @@ namespace BusinessLogic
     /// </summary>
     public class OperationFailedEventArgs : EventArgs
     {
-        /// <summary>Текст причины для показа пользователю</summary>
         public string Message { get; }
 
         /// <summary>

@@ -4,9 +4,8 @@ using Shared;
 namespace Presenter
 {
     /// <summary>
-    /// Presenter главной формы: подписан на события View и Model,
+    /// Presenter главной формы: подписан на события View и Model
     /// перерисовывает View вызовом методов <see cref="IMainView"/>.
-    /// Работает только с интерфейсами <see cref="IMainView"/> и <see cref="IModel"/> (DIP).
     /// </summary>
     public class MainPresenter
     {
@@ -23,7 +22,7 @@ namespace Presenter
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
-            // View → Presenter
+            // View в Presenter
             _view.ViewLoaded += (_, _) => Safe(() => { ShowBrands(); ShowAllCars(); });
             _view.ShowAllCarsRequested += (_, _) => Safe(ShowAllCars);
             _view.RefreshBrandsRequested += (_, _) => Safe(ShowBrands);
@@ -38,7 +37,7 @@ namespace Presenter
             _view.UpdateBrandRequested += (_, brand) => _model.UpdateBrand(brand);
             _view.DeleteBrandRequested += (_, id) => _model.DeleteBrand(id);
 
-            // Model → Presenter
+            // Model в Presenter
             _model.CarsChanged += (_, _) => Safe(ShowAllCars);
             _model.BrandsChanged += (_, _) => Safe(() => { ShowBrands(); ShowAllCars(); });
             _model.OperationFailed += (_, e) => _view.ShowError(e.Message);
@@ -49,7 +48,7 @@ namespace Presenter
         private void ShowBrands() => _view.ShowBrands(_model.GetAllBrands());
 
         /// <summary>
-        /// Выполняет действие, превращая исключения (например, недоступность БД) в сообщение для View
+        /// Сообщение для View
         /// </summary>
         private void Safe(Action action)
         {
